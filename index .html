@@ -1,0 +1,638 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>سجل الكاشير - واجهة الأصناف</title>
+
+  <!-- أيقونات + خط Poppins -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ------------------------------------------
+       Theme variables (Modern Dark by default)
+       ------------------------------------------ */
+    :root{
+      --main-theme-color: #06b6d4; /* teal */
+      --accent-color: #7c3aed;    /* violet accent */
+      --text-dark: #e6eef8;       /* light text */
+      --text-header: #e6eef8;
+      --background-light: #0b1220; /* dark page bg */
+      --danger-color: #ef4444;     /* red */
+      --safe-color: #34d399;       /* green */
+      --shadow-color: rgba(2,6,23,0.6);
+      --font-family: 'Poppins', sans-serif;
+      --border-color: rgba(255,255,255,0.04);
+      --logout-color: #94a3b8;
+      --card-bg: rgba(255,255,255,0.02);
+      --glass: rgba(255,255,255,0.03);
+      --transition: 0.22s ease;
+    }
+
+    /* Light theme override (applied when body.light exists) */
+    body.light {
+      --main-theme-color: #FF8A65;   /* warm orange (original look) */
+      --accent-color: #FFA726;
+      --text-dark: #13293b; /* dark text */
+      --text-header: #1f2937;
+      --background-light: #f8f5f0;
+      --danger-color: #ef4444;
+      --safe-color: #66BB6A;
+      --shadow-color: rgba(78, 52, 46, 0.12);
+      --card-bg: #ffffff;
+      --glass: rgba(0,0,0,0.03);
+      --border-color: rgba(15,23,42,0.06);
+    }
+
+    /* ------------------------------------------
+       Base layout & typography
+       ------------------------------------------ */
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0; padding:0; font-family:var(--font-family); -webkit-font-smoothing:antialiased;}
+    body{
+      background: linear-gradient(180deg, var(--background-light), #08101a 120%);
+      color: var(--text-dark);
+      transition: background var(--transition), color var(--transition);
+      direction: rtl;
+      text-align: right;
+      padding: 18px;
+    }
+
+    .container { max-width:1200px; margin: 10px auto; }
+
+    h1,h2,h3{margin:0; font-weight:700; color:var(--text-header);}
+
+    /* ------------------------------------------
+       Theme toggle (top-left small icon)
+       ------------------------------------------ */
+    #theme-toggle {
+      position: fixed;
+      top: 14px;
+      left: 14px; /* user wanted top-left */
+      z-index: 9999;
+      width:44px; height:44px;
+      border-radius:999px;
+      display:flex; align-items:center; justify-content:center;
+      background: var(--card-bg);
+      color: var(--text-dark);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 6px 18px var(--shadow-color);
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease, color .18s ease;
+      font-size:18px;
+    }
+    #theme-toggle:hover { transform: scale(1.06); }
+
+    /* ------------------------------------------
+       Login screen
+       ------------------------------------------ */
+    #login-screen {
+      display:flex; justify-content:center; align-items:center;
+      position: fixed; inset:0;
+      background: linear-gradient(135deg, var(--main-theme-color), var(--accent-color));
+      z-index: 800;
+    }
+    .login-box {
+      width:360px; background:var(--card-bg); border-radius:12px; padding:28px;
+      box-shadow: 0 12px 36px var(--shadow-color); color:var(--text-dark);
+      border:1px solid var(--border-color);
+    }
+    .login-box h2{ color:var(--text-dark); margin-bottom:14px; font-weight:800; font-size:22px; }
+    .login-box select, .login-box input {
+      width:100%; padding:12px 10px; border-radius:8px; border:1px solid var(--border-color);
+      background: transparent; color: inherit; margin-bottom:12px; outline:none;
+    }
+    .login-box button {
+      width:100%; padding:12px; border-radius:9px; border:none; cursor:pointer;
+      background: linear-gradient(90deg,var(--accent-color),var(--main-theme-color));
+      color:#fff; font-weight:700; font-size:15px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+      transition: transform .12s ease, opacity .12s ease;
+    }
+    .login-box button:active { transform: translateY(1px); }
+
+    /* ------------------------------------------
+       Main app layout (keep original structure)
+       ------------------------------------------ */
+    #cashier-content { display:none; }
+    .header-section { margin-top:8px; text-align:center; }
+    .header-section h1 { font-size:20px; padding:18px 0; border-bottom:2px solid rgba(255,255,255,0.03); }
+
+    #item-inputs-container {
+      margin-top:20px;
+      padding:14px;
+      background: var(--card-bg);
+      border-radius:10px;
+      box-shadow: 0 8px 28px var(--shadow-color);
+      border: 1px solid var(--border-color);
+      overflow-x:auto;
+    }
+
+    .items-grid{
+      display:grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(280px,1fr);
+      grid-template-rows: repeat(15, minmax(66px,1fr));
+      gap:14px;
+      padding:6px;
+    }
+
+    .item-box{
+      display:flex; align-items:center; justify-content:space-between;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+      border-radius:10px; padding:10px; transition: transform var(--transition), background var(--transition);
+      border:1px solid var(--border-color);
+    }
+    .item-box:hover { transform: translateY(-4px); box-shadow: 0 10px 26px rgba(0,0,0,0.35); }
+
+    .item-name-group{ display:flex; gap:10px; align-items:center; }
+    .item-number{
+      min-width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center;
+      border-radius:8px; font-weight:800; background: linear-gradient(90deg,var(--main-theme-color),var(--accent-color));
+      color:#fff; padding:6px 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+    .item-name{ font-weight:800; font-size:1rem; color:var(--text-dark); max-width:220px; }
+
+    .quantity-input{
+      width:70px; padding:8px; border-radius:8px; border:1px solid var(--border-color);
+      text-align:center; font-weight:800; font-size:1rem; background:transparent; color:var(--text-dark);
+    }
+
+    /* ------------------------------------------
+       Control panel & buttons
+       ------------------------------------------ */
+    .control-panel{
+      margin-top:18px; background:var(--card-bg); padding:18px; border-radius:12px;
+      box-shadow: 0 12px 30px var(--shadow-color); border:1px solid var(--border-color);
+    }
+    .summary-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; }
+    .summary-label{ font-weight:800; color:var(--text-dark); }
+    .summary-value{ font-weight:900; color:var(--safe-color); font-size:1.6rem; }
+
+    .input-and-btn-group{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    #total-amount{ padding:12px; font-size:1.1rem; border-radius:10px; border:2px solid var(--main-theme-color); background:transparent; color:var(--text-dark); min-width:180px; text-align:center; }
+    .end-period-btn{
+      padding:12px 18px; border-radius:10px; border:none; cursor:pointer; font-weight:900; font-size:15px;
+      background: linear-gradient(90deg,var(--accent-color),var(--main-theme-color)); color:#fff;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .end-period-btn:hover{ transform: translateY(-3px); }
+
+    .report-btns{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; }
+    .report-btns button{ padding:10px 14px; border-radius:9px; border:1px solid var(--border-color); background:var(--glass); color:var(--text-dark); cursor:pointer; font-weight:800; }
+
+    #logout-btn{ background:transparent; color:var(--logout-color); border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; }
+
+    #clear-data-btn{ background:transparent; color:var(--danger-color); border:1px solid rgba(255,255,255,0.04); padding:10px 14px; border-radius:8px; display:none; }
+
+    /* Past periods & report */
+    #past-periods, #final-report-container{
+      margin-top:20px; padding:16px; border-radius:10px; background:var(--card-bg); border:1px solid var(--border-color);
+      box-shadow: 0 10px 26px var(--shadow-color);
+    }
+    .period-log{ padding:12px; border-radius:8px; background: rgba(255,255,255,0.02); margin-bottom:12px; border:1px solid var(--border-color); }
+
+    /* modal */
+    #password-modal{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:999; }
+    .modal-content{ background:var(--card-bg); color:var(--text-dark); padding:20px; border-radius:10px; width:90%; max-width:420px; border:1px solid var(--border-color); }
+
+    /* responsiveness */
+    @media (max-width: 900px){
+      .items-grid { grid-auto-columns: minmax(220px,1fr); grid-template-rows: repeat(20, minmax(52px,1fr)); }
+      .item-name { max-width:140px; font-size:0.95rem; }
+    }
+    @media (max-width:600px){
+      body{ padding:10px; }
+      #theme-toggle{ width:40px; height:40px; font-size:16px; left:10px; top:10px; }
+      .items-grid { grid-auto-columns: minmax(180px,1fr); grid-template-rows: repeat(24, minmax(48px,1fr)); }
+      .container{ padding:0 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Theme toggle (icon only) -->
+  <button id="theme-toggle" title="تبديل الثيم">🌙</button>
+
+  <!-- ============================================
+       ORIGINAL APP HTML (kept structure & IDs)
+       ============================================ -->
+  <div id="login-screen">
+    <div class="login-box">
+      <h2>تسجيل الدخول</h2>
+      <select id="username-select">
+        <option value="" disabled selected>اختر اسم المستخدم</option>
+      </select>
+      <input type="password" id="password-input" placeholder="كلمة المرور">
+      <button onclick="login()">تسجيل الدخول</button>
+    </div>
+  </div>
+
+  <div class="container" id="cashier-content">
+    <div class="header-section">
+      <h1>برنامج تسجيل الأصناف</h1>
+    </div>
+
+    <div id="item-inputs-container">
+      <!-- grid will be generated here -->
+    </div>
+
+    <div class="control-panel">
+      <div class="summary-row">
+        <span class="summary-label">إجمالي عدد الأصناف المدخلة:</span>
+        <span class="summary-value" id="total-orders-count">0</span>
+      </div>
+
+      <div class="input-and-btn-group">
+        <input type="number" id="total-amount" placeholder="أدخل المبلغ الإجمالي من الماكينة هنا" min="0">
+        <button class="end-period-btn" onclick="promptEndPeriod()"><i class="fas fa-money-check-alt"></i> إنهاء الفترة وتسجيل المبلغ</button>
+      </div>
+
+      <div class="report-btns">
+        <button onclick="promptDailyReport()"><i class="fas fa-file-invoice"></i> إعداد وعرض تقرير المبيعات التفصيلي</button>
+        <button id="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+        <button id="clear-data-btn" onclick="clearAllData()"><i class="fas fa-trash"></i> حذف السجل بالكامل (وردية جديدة)</button>
+      </div>
+    </div>
+
+    <div id="past-periods">
+      <h2>سجل الفترات السابقة</h2>
+    </div>
+
+    <div id="final-report-container">
+      <h2>التقرير التفصيلي للمبيعات الكلية</h2>
+      <p style="text-align:center; font-size:1.1em;">تاريخ التقرير: <strong id="report-date"></strong></p>
+      <div id="detailed-sales-summary"></div>
+    </div>
+  </div>
+
+  <!-- modal confirm delete -->
+  <div id="password-modal" style="display:none;">
+    <div class="modal-content">
+      <h3>تأكيد حذف السجل</h3>
+      <p>لإجراء عملية الحذف النهائية، أدخل كلمة سر المدير:</p>
+      <input type="password" id="password-input-delete" placeholder="كلمة سر الحذف">
+      <div style="display:flex; gap:10px; margin-top:14px;">
+        <button class="end-period-btn" style="flex:1" onclick="executeClearData()">تأكيد الحذف</button>
+        <button style="flex:1; background:#888; color:#fff; border:none; padding:10px 14px; border-radius:8px;" onclick="closeModal()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       ORIGINAL APP SCRIPT (logic preserved)
+       ============================================ -->
+  <script>
+    /**********************
+     * حسابات المستخدمين وكلمات السر
+     **********************/
+    const USER_ACCOUNTS = {
+      "مدير عام": { password: "1010", role: "admin" },
+      "محمد": { password: "5050", role: "cashier" },
+      "علي": { password: "5050", role: "cashier" },
+      "سيد": { password: "5050", role: "cashier" },
+      "احمد": { password: "5050", role: "cashier" },
+      "طه": { password: "5050", role: "cashier" },
+      "محمود": { password: "5050", role: "cashier" },
+      "سعيد": { password: "5050", role: "cashier" },
+      "ممدوح": { password: "5050", role: "cashier" }
+    };
+
+    const DELETION_PASSWORD = "111975";
+    let currentUser = null;
+    let pastPeriods = [];
+
+    /**********************
+     * الأصناف (تسلسل ثابت كما في ملفك)
+     **********************/
+    const ALL_ITEMS_IN_ORDER = [
+      "شاورمه كيذر","شاورمه شامي","شاورمه فينا","شاورمه طبق",
+      "مكرونه","كبيبه","ورق عنب","سلطه خضراء","طماطم مخلل","باذنجان مخلل","شيبسي","بابا غنوج","طرشي",
+      "كفته ص","سجق ص","كبده ص","مخ ص","روزبيف ص","جبنه رومي","فراخ بانيه ص","بيف برجر","سوسيس ",
+      "كفته شامي","سجق شامي","كبده شامي","مخ شامي","روزبيف شامي","سوسيس شامي","فراخ شامي",
+      "كفته فينا","سجق فينا","كبده فينا","مخ فينا","روزبيف فينا","سوسيس فينا","فراخ فينا",
+      "جبنه رومي فينا",
+      " مانجو"," فراوله"," رمان"," برتقال","عنب"," جوافه"," موز"," كانتالوب","كوكتيل ",
+      "كولا","سبرايت","فانتا","دايت ","مياه معدنيه",
+      "ليمون","بطيخ","كانز ص","كانز ك"
+    ];
+
+    /**********************
+     * Helpers & UI builders
+     **********************/
+    function populateUsernameSelect(){
+      const sel = document.getElementById('username-select');
+      // remove old options except first placeholder
+      Array.from(sel.options).forEach((opt, i) => { if(i>0) opt.remove(); });
+      for(const u in USER_ACCOUNTS){
+        const o = document.createElement('option');
+        o.value = u;
+        o.textContent = u + (USER_ACCOUNTS[u].role === 'admin' ? ' (مدير)' : '');
+        sel.appendChild(o);
+      }
+    }
+
+    function login(){
+      const enteredUsername = document.getElementById('username-select').value;
+      const enteredPassword = document.getElementById('password-input').value;
+      if(!enteredUsername){
+        alert("الرجاء اختيار اسم المستخدم.");
+        return;
+      }
+      const user = USER_ACCOUNTS[enteredUsername];
+      if(user && enteredPassword === user.password){
+        currentUser = { name: enteredUsername, role: user.role };
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('cashier-content').style.display = 'block';
+        const header = document.querySelector('#cashier-content h1');
+        header.textContent = `برنامج تسجيل الأصناف (المستخدم: ${currentUser.name})`;
+        updatePermissionsUI();
+        createItemInputs();
+      } else {
+        alert("اسم المستخدم أو كلمة المرور غير صحيحة.");
+      }
+    }
+
+    function logout(){
+      if(!confirm("هل أنت متأكد من تسجيل الخروج؟")) return;
+      currentUser = null;
+      document.getElementById('cashier-content').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('username-select').value = '';
+      document.getElementById('password-input').value = '';
+      document.getElementById('final-report-container').style.display = 'none';
+      // reset inputs
+      document.querySelectorAll('.quantity-input').forEach(i => i.value = 0);
+      document.getElementById('total-amount').value = '';
+      updateSummary();
+    }
+
+    function updatePermissionsUI(){
+      const btn = document.getElementById('clear-data-btn');
+      if(!btn) return;
+      if(currentUser && currentUser.role === 'admin') btn.style.display = 'block';
+      else btn.style.display = 'none';
+    }
+
+    function closeModal(){
+      document.getElementById('password-modal').style.display = 'none';
+      document.getElementById('password-input-delete').value = '';
+    }
+
+    function executeClearData(){
+      if(!currentUser || currentUser.role !== 'admin'){
+        closeModal();
+        alert("صلاحية حذف السجل بالكامل مقتصرة على حساب المدير فقط.");
+        return;
+      }
+      const entered = document.getElementById('password-input-delete').value;
+      closeModal();
+      if(entered === DELETION_PASSWORD){
+        localStorage.removeItem('cashierPeriods');
+        pastPeriods = [];
+        document.getElementById('final-report-container').style.display = 'none';
+        displayPastPeriods();
+        alert("تم حذف السجل بالكامل بنجاح. يمكنك الآن تسجيل وردية/يوم جديد.");
+      } else {
+        alert("كلمة السر غير صحيحة. تم إلغاء عملية الحذف.");
+      }
+    }
+
+    function getAllItemNames(){
+      const names = [];
+      let counter = 1;
+      ALL_ITEMS_IN_ORDER.forEach(it => names.push({ name: it, number: counter++ }));
+      return names;
+    }
+
+    function createItemInputs(){
+      const container = document.getElementById('item-inputs-container');
+      const existing = container.querySelector('.items-grid');
+      if(existing){
+        loadData(); return;
+      }
+      const all = getAllItemNames();
+      const grid = document.createElement('div'); grid.className = 'items-grid';
+      container.appendChild(grid);
+      all.forEach(itemData => {
+        const item = itemData.name;
+        const number = itemData.number;
+        const safeId = `input-${item.replace(/\s|\/|\(|\)/g,'_')}`;
+        const box = document.createElement('div'); box.className = 'item-box';
+        box.innerHTML = `
+          <div class="item-name-group">
+            <span class="item-number">${number}</span>
+            <span class="item-name">${item}</span>
+          </div>
+          <input type="number" id="${safeId}" class="quantity-input" value="0" min="0" oninput="updateSummary()" onclick="this.select()">
+        `;
+        grid.appendChild(box);
+      });
+      loadData();
+    }
+
+    function updateSummary(){
+      let totalCount = 0;
+      const all = getAllItemNames().map(i => i.name);
+      all.forEach(item => {
+        const safeId = `input-${item.replace(/\s|\/|\(|\)/g,'_')}`;
+        const el = document.getElementById(safeId);
+        if(el){
+          const q = parseInt(el.value) || 0;
+          if(q>0) totalCount += q;
+        }
+      });
+      document.getElementById('total-orders-count').textContent = totalCount;
+    }
+
+    function getCurrentItemsLog(){
+      const itemsLog = {};
+      const all = getAllItemNames().map(i=>i.name);
+      all.forEach(item => {
+        const safeId = `input-${item.replace(/\s|\/|\(|\)/g,'_')}`;
+        const el = document.getElementById(safeId);
+        const q = parseInt(el ? el.value : 0) || 0;
+        if(q>0) itemsLog[item] = q;
+      });
+      return itemsLog;
+    }
+
+    function promptEndPeriod(){
+      const totalInput = document.getElementById('total-amount');
+      const total = parseFloat(totalInput.value);
+      if(isNaN(total) || total <= 0){
+        alert("الرجاء إدخال المبلغ الإجمالي للفترة من الماكينة.");
+        totalInput.focus(); return;
+      }
+      endPeriod(total);
+    }
+
+    function endPeriod(totalAmount){
+      const totalOrders = parseInt(document.getElementById('total-orders-count').textContent) || 0;
+      if(totalOrders === 0){
+        alert("لا يوجد أصناف مسجلة في هذه الفترة.");
+        return;
+      }
+      const currentItemsLog = getCurrentItemsLog();
+      const periodLog = {
+        id: pastPeriods.length + 1,
+        time: new Date().toLocaleTimeString('ar-EG'),
+        date: new Date().toLocaleDateString('ar-EG'),
+        totalAmount,
+        totalOrders,
+        itemsLog: currentItemsLog,
+        user: currentUser ? currentUser.name : 'غير معروف'
+      };
+      pastPeriods.push(periodLog);
+      saveData();
+      displayPastPeriods();
+      document.getElementById('total-amount').value = '';
+      getAllItemNames().map(i=>i.name).forEach(it => {
+        const safeId = `input-${it.replace(/\s|\/|\(|\)/g,'_')}`;
+        const el = document.getElementById(safeId);
+        if(el) el.value = 0;
+      });
+      updateSummary();
+      alert(`تم تسجيل الفترة بنجاح بواسطة ${currentUser ? currentUser.name : 'مستخدم مجهول'}. المبلغ الإجمالي المسجل: ${totalAmount}.`);
+    }
+
+    function displayPastPeriods(){
+      const container = document.getElementById('past-periods');
+      container.innerHTML = '<h2>سجل الفترات السابقة</h2>';
+      const formatItemsLog = (log) => {
+        let html = '<ul style="margin:0; padding-right:10px;">';
+        for(const it in log){
+          if(log[it] > 0) html += `<li style="padding:4px 0;"><strong>${it}:</strong> <span style="color:var(--accent-color); font-weight:800;">${log[it]}</span> قطعة</li>`;
+        }
+        html += '</ul>';
+        return html;
+      };
+      pastPeriods.slice().reverse().forEach(period => {
+        const fullAmount = period.totalAmount;
+        const registeredUser = period.user || 'غير معروف';
+        const logDiv = document.createElement('div'); logDiv.className = 'period-log';
+        logDiv.innerHTML = `
+          <h3>فترة رقم ${period.id} - ${period.time} (${period.date})</h3>
+          <p style="font-weight:700; margin:6px 0;"><strong>تم التسجيل بواسطة:</strong> <span style="color:var(--text-header); font-weight:900;">${registeredUser}</span></p>
+          <p style="font-weight:700;"><strong>الإجمالي المسجل من الماكينة:</strong> <span style="color:var(--danger-color); font-weight:900; font-size:1.2em;">${fullAmount}</span></p>
+          <p style="font-weight:700;"><strong>إجمالي عدد الوحدات/القطع المدخلة:</strong> ${period.totalOrders}</p>
+          <h4 style="font-weight:800; margin-top:10px; border-bottom:1px solid var(--border-color); padding-bottom:6px; color:var(--text-header);">تفاصيل الأصناف:</h4>
+          ${formatItemsLog(period.itemsLog)}
+        `;
+        container.appendChild(logDiv);
+      });
+    }
+
+    function generateDailySalesReport(){
+      if(pastPeriods.length === 0){
+        alert("لا يوجد بيانات مسجلة لإنشاء التقرير.");
+        return;
+      }
+      const combinedSales = {}; let totalMoney = 0; let totalUnits = 0;
+      pastPeriods.forEach(p => {
+        totalMoney += Number(p.totalAmount) || 0;
+        totalUnits += Number(p.totalOrders) || 0;
+        for(const it in p.itemsLog) combinedSales[it] = (combinedSales[it] || 0) + p.itemsLog[it];
+      });
+      const ordered = getAllItemNames().map(i=>i.name);
+      const sorted = ordered.map(item => [item, combinedSales[item] || 0]).filter(([,q])=>q>0);
+      const finalTotalMoney = totalMoney.toFixed(2);
+      document.getElementById('report-date').textContent = new Date().toLocaleDateString('ar-EG');
+      let tableHTML = '<table style="width:100%; border-collapse:collapse;">';
+      tableHTML += '<thead><tr><th style="padding:8px; background:var(--main-theme-color); color:#fff; font-weight:800;">الصنف</th><th style="padding:8px; background:var(--main-theme-color); color:#fff; font-weight:800;">الكمية الكلية المباعة</th></tr></thead><tbody>';
+      sorted.forEach(([item, qty]) => {
+        tableHTML += `<tr><td style="padding:8px; border:1px solid var(--border-color); text-align:right; font-weight:800;">${item}</td><td style="padding:8px; border:1px solid var(--border-color); font-weight:800;">${qty} قطعة</td></tr>`;
+      });
+      tableHTML += `<tr class="report-total-row"><td style="padding:8px; border:1px solid var(--border-color); font-weight:900;">الإجمالي الكلي للقطع</td><td style="padding:8px; border:1px solid var(--border-color); font-weight:900;">${totalUnits} قطعة</td></tr>`;
+      tableHTML += `<tr class="report-total-row"><td style="padding:8px; border:1px solid var(--border-color); font-weight:900;">الإجمالي الكلي للمبلغ</td><td style="padding:8px; border:1px solid var(--border-color); font-weight:900;">${finalTotalMoney}</td></tr>`;
+      tableHTML += '</tbody></table>';
+      const summaryDiv = document.getElementById('detailed-sales-summary');
+      summaryDiv.innerHTML = tableHTML;
+      document.getElementById('final-report-container').style.display = 'block';
+      if(!document.querySelector('#final-report-container .print-btn')) {
+        const printBtn = document.createElement('button');
+        printBtn.className = 'end-period-btn print-btn';
+        printBtn.style.marginTop = '18px';
+        printBtn.style.width = 'auto';
+        printBtn.textContent = 'طباعة التقرير';
+        printBtn.onclick = () => window.print();
+        document.getElementById('final-report-container').appendChild(printBtn);
+      }
+      setTimeout(()=> document.getElementById('final-report-container').scrollIntoView({behavior:'smooth'}), 50);
+      alert("تم عرض تقرير مبيعات اليوم التفصيلي في نهاية الصفحة. يمكنك طباعته أو نسخه الآن.");
+    }
+
+    function promptDailyReport(){
+      if(pastPeriods.length === 0){ alert("لا يوجد فترات مسجلة لإعداد التقرير."); return; }
+      document.getElementById('final-report-container').style.display = 'none';
+      generateDailySalesReport();
+    }
+
+    function clearAllData(){
+      if(!currentUser || currentUser.role !== 'admin'){ alert("صلاحية حذف السجل بالكامل مقتصرة على حساب المدير فقط."); return; }
+      if(!confirm("هل أنت متأكد من حذف السجل بالكامل؟ هذه الخطوة لا يمكن التراجع عنها.")) return;
+      document.getElementById('password-modal').style.display = 'flex';
+      document.getElementById('password-input-delete').focus();
+    }
+
+    function saveData(){
+      localStorage.setItem('cashierPeriods', JSON.stringify(pastPeriods));
+    }
+
+    function loadData(){
+      const s = localStorage.getItem('cashierPeriods');
+      if(s){
+        try{ pastPeriods = JSON.parse(s); } catch(e){ pastPeriods = []; }
+        displayPastPeriods();
+      }
+      updateSummary();
+      if(document.getElementById('cashier-content').style.display === 'block') updatePermissionsUI();
+    }
+
+    /**********************
+     * DOM events & init
+     **********************/
+    document.addEventListener('DOMContentLoaded', () => {
+      populateUsernameSelect();
+      document.getElementById('cashier-content').style.display = 'none';
+
+      document.getElementById('password-input-delete').addEventListener('keypress', e => {
+        if(e.key === 'Enter') executeClearData();
+      });
+      document.getElementById('password-input').addEventListener('keypress', e => {
+        if(e.key === 'Enter') login();
+      });
+      document.getElementById('total-amount').addEventListener('keypress', e => {
+        if(e.key === 'Enter') promptEndPeriod();
+      });
+      // load stored periods into pastPeriods
+      loadData();
+    });
+
+    /**********************
+     * Theme toggle logic (small moon/sun icon on top-left)
+     **********************/
+    const themeToggle = document.getElementById('theme-toggle');
+    let isDark = true;
+    function setTheme(dark){
+      if(dark){
+        document.body.classList.remove('light');
+        themeToggle.textContent = '🌙';
+      } else {
+        document.body.classList.add('light');
+        themeToggle.textContent = '☀️';
+      }
+      localStorage.setItem('cs_theme_dark', dark ? '1' : '0');
+      isDark = dark;
+    }
+    themeToggle.addEventListener('click', () => setTheme(!isDark));
+    // initialize theme from storage (dark default)
+    (function(){
+      const saved = localStorage.getItem('cs_theme_dark');
+      if(saved === '0') setTheme(false); else setTheme(true);
+    })();
+
+  </script>
+</body>
+</html>
