@@ -1,620 +1,1112 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cashier System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل الكاشير - واجهة الأصناف</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="icon" href="https://i.ibb.co/FWSY5QY/rose-removebg.png"> 
+    <link rel="apple-touch-icon" href="https://i.ibb.co/FWSY5QY/rose-removebg.png"> 
 
-  <!-- Google Font: Poppins -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+        /* ------------------------------------------------ */
+        /* متغيرات الألوان الجديدة */
+        /* ------------------------------------------------ */
+        :root {
+            --main-theme-color: #FF8A65; /* برتقالي مرجاني */
+            --accent-color: #FFA726; /* برتقالي ساطع */
+            --text-dark: #4E342E; /* بني داكن */
+            --text-header: #5D4037; /* بني العناوين */
+            --background-light: #FFF3E0; /* بيج فاتح */
+            --danger-color: #EF5350; /* أحمر للخطر */
+            --safe-color: #66BB6A; /* أخضر للأمان */
+            --shadow-color: rgba(78, 52, 46, 0.2);
+            --font-family: 'Tajawal', sans-serif;
+        }
 
-  <style>
-    /* ---------------- Theme / Base ---------------- */
-    :root{
-      --bg:#0f1724;
-      --card:#0b1220;
-      --muted:#94a3b8;
-      --text:#e6eef8;
-      --accent:#06b6d4;
-      --accent2:#7c3aed;
-      --glass: rgba(255,255,255,0.03);
-      --success:#16a34a;
-      --danger:#ef4444;
-      --transition: .22s ease;
-      --font: 'Poppins', sans-serif;
-    }
-    body { margin:0; font-family:var(--font); -webkit-font-smoothing:antialiased; background:linear-gradient(180deg,var(--bg),#08101a); color:var(--text); padding:18px; }
-    .wrap{ max-width:1100px; margin:8px auto; display:grid; grid-template-columns: 380px 1fr; gap:18px; align-items:start; }
+        /* ------------------------------------------------ */
+        /* تنسيقات عامة */
+        /* ------------------------------------------------ */
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, #f8f5f0, var(--background-light));
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            direction: rtl; 
+            text-align: right;
+            min-height: 100vh;
+            overflow-y: auto; 
+        }
 
-    /* header */
-    .header { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:14px 18px; box-shadow:0 6px 18px rgba(2,6,23,0.6); }
-    .title { display:flex; align-items:center; gap:12px; }
-    .logo { width:48px; height:48px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-weight:700; color:white; font-size:18px; }
-    h1{ margin:0; font-size:18px; }
-    .subtitle{ font-size:12px; color:var(--muted); margin-top:2px; }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
 
-    /* theme toggle top-left icon */
-    #theme-toggle {
-      position: fixed; top:12px; left:12px; z-index:9999; width:44px; height:44px; border-radius:999px;
-      display:flex; align-items:center; justify-content:center; background:var(--card); color:var(--text);
-      border:1px solid rgba(255,255,255,0.03); cursor:pointer; font-size:18px; box-shadow:0 6px 18px rgba(0,0,0,0.5);
-      transition: transform .18s ease, background .18s ease;
-    }
-    #theme-toggle:hover{ transform: scale(1.06); }
+        h1, h2, h3 {
+            color: var(--text-header);
+            font-weight: 800;
+            text-align: center;
+        }
 
-    /* left panel (items) */
-    .panel { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:14px; box-shadow: 0 6px 18px rgba(0,0,0,0.6); }
-    .items { display:flex; flex-direction:column; gap:10px; max-height:66vh; overflow:auto; padding-right:6px; }
-    .item { display:flex; gap:10px; align-items:center; justify-content:space-between; padding:8px; border-radius:10px; background:transparent; }
-    .badge { min-width:44px; height:44px; border-radius:10px; background:rgba(255,255,255,0.02); display:flex;align-items:center;justify-content:center; font-weight:700; color:var(--accent); font-size:13px; }
-    .item-name { font-weight:600; }
-    .qty { width:96px; display:flex; gap:6px; align-items:center; }
-    .qty input { width:56px; padding:8px; border-radius:8px; border:none; text-align:center; outline:none; font-weight:600; background:rgba(255,255,255,0.02); color:var(--text); }
+        h1 {
+            border-bottom: 3px solid var(--main-theme-color);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
 
-    /* right panel */
-    .summary { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:14px; box-shadow: 0 6px 18px rgba(0,0,0,0.6); display:flex; flex-direction:column; gap:10px; }
-    .row { display:flex; justify-content:space-between; align-items:center; padding:8px 6px; }
-    .big { font-size:24px; font-weight:800; }
-    .small { font-size:13px; color:var(--muted); }
+        /* ------------------------------------------------ */
+        /* تنسيقات شاشة الدخول */
+        /* ------------------------------------------------ */
+        #login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, var(--main-theme-color) 0%, var(--accent-color) 100%);
+            z-index: 1000;
+        }
+        
+        .login-box {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            text-align: center;
+            width: 350px;
+        }
 
-    .actions { display:flex; gap:8px; align-items:center; margin-top:6px; }
-    .periods { margin-top:8px; display:flex; flex-direction:column; gap:8px; max-height:36vh; overflow:auto; padding-right:6px; }
-    .period-card { background: rgba(255,255,255,0.02); padding:10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; }
+        .login-box h2 {
+            margin-top: 0;
+            color: var(--main-theme-color);
+            font-size: 2em;
+        }
 
-    .btn { background:var(--glass); border:1px solid rgba(255,255,255,0.04); color:var(--text); padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600; font-size:13px; }
-    .btn.primary { background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#fff; border:none; }
-    .btn.warn { background:transparent; border:1px solid rgba(255,80,80,0.12); color:var(--danger); }
+        .login-box select,
+        .login-box input[type="text"],
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
 
-    .foot { grid-column:1/-1; text-align:center; font-size:12px; color:var(--muted); margin-top:6px; }
+        .login-box input:focus,
+        .login-box select:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
 
-    /* modal */
-    #password-modal{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:999; }
-    .modal-content{ background:var(--card); color:var(--text); padding:20px; border-radius:10px; width:90%; max-width:420px; border:1px solid rgba(255,255,255,0.04); }
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--main-theme-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 700;
+            transition: background-color 0.3s, transform 0.1s;
+        }
 
-    @media (max-width:980px){ .wrap { grid-template-columns: 1fr; gap:12px; padding-bottom:60px; } .header { flex-direction:column; align-items:stretch; gap:10px; } }
-  </style>
+        .login-box button:hover {
+            background-color: #E67A5A;
+        }
+        .login-box button:active {
+            transform: scale(0.98);
+        }
+
+        /* ------------------------------------------------ */
+        /* تنسيقات المحتوى الرئيسي (الكاشير) */
+        /* ------------------------------------------------ */
+        #cashier-content {
+            display: none;
+            padding: 20px 0;
+        }
+        
+        /* ------------------------------------------------ */
+        /* تنسيقات الأصناف والكميات (لـ Desktop) */
+        /* ------------------------------------------------ */
+        #item-inputs-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            overflow-x: auto; 
+            overflow-y: hidden; 
+        }
+        
+        .items-grid {
+            display: grid;
+            grid-template-rows: repeat(15, minmax(65px, 1fr)); 
+            grid-auto-columns: minmax(320px, 1fr); 
+            gap: 15px;
+            padding: 10px;
+            grid-auto-flow: column; 
+        }
+
+        .item-box {
+            background-color: #fff;
+            border: 2px solid var(--main-theme-color);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            cursor: default; 
+        }
+        
+        .item-name-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .item-name {
+            font-weight: 900; 
+            font-size: 1.05em; 
+            color: var(--text-header); 
+            line-height: 1.3;
+            flex-grow: 1;
+        }
+        
+        .item-number {
+            font-size: 1em; 
+            font-weight: 900; 
+            color: var(--accent-color);
+            background-color: rgba(255, 253, 250, 0.95);
+            padding: 4px 8px;
+            border-radius: 6px;
+            min-width: 30px;
+            text-align: center;
+            border: 1px solid var(--accent-color);
+        }
+        
+        /* حقل الإدخال الجديد */
+        .quantity-input {
+            width: 60px;
+            padding: 8px;
+            text-align: center;
+            border: 2px solid var(--safe-color);
+            border-radius: 6px;
+            font-weight: 700;
+            color: var(--danger-color);
+            background-color: #E8F5E9; 
+            font-size: 1em;
+        }
+
+        /* ------------------------------------------------ */
+        /* **تعديلات لوحات التحكم والأزرار** */
+        /* ------------------------------------------------ */
+        
+        #amount-input-panel, .control-panel {
+            background-color: #ffffff; 
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(78, 52, 46, 0.15); 
+            border: 1px solid #E0E0E0;
+        }
+        
+        #amount-input-panel h2, .control-panel h2 {
+            font-weight: 900 !important; 
+            color: var(--main-theme-color); 
+            text-align: right !important;
+            border-bottom: 3px solid var(--accent-color) !important;
+            padding-bottom: 8px !important;
+            margin-top: 0 !important;
+            margin-bottom: 25px !important;
+        }
+        
+        .control-flex {
+            display: flex; 
+            align-items: flex-end; 
+            gap: 20px;
+            font-weight: 800; 
+            font-size: 1.1em;
+        }
+        
+        .control-flex > div {
+            flex: 1;
+        }
+        
+        #amount-input-panel label {
+            font-weight: 800 !important;
+            color: var(--text-header) !important;
+            font-size: 1.1em !important;
+        }
+
+        #total-amount {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid var(--main-theme-color); 
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 1.2em;
+            font-weight: 900; 
+            color: var(--text-header);
+            background-color: var(--background-light); 
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+        #total-amount:focus {
+            border-color: var(--safe-color);
+            box-shadow: 0 0 0 4px rgba(102, 187, 106, 0.3); 
+            background-color: #fff;
+            outline: none;
+        }
+
+        .summary-box {
+            background-color: var(--safe-color) !important; 
+            color: white !important; 
+            padding: 15px 20px !important;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            font-weight: 800 !important; 
+            flex-grow: 0 !important; 
+            min-width: 150px !important; 
+        }
+        
+        #total-orders-count {
+            display: block;
+            font-size: 2.2em;
+            font-weight: 900 !important; 
+            margin-top: 5px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); 
+        }
+        
+        .control-flex button, .report-btns button {
+            padding: 15px 20px !important;
+            border-radius: 10px !important;
+            font-size: 1.1em !important;
+            font-weight: 800 !important; 
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            width: 100%; 
+        }
+        .control-flex button:hover, .report-btns button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+        
+        .end-period-btn {
+            background-color: var(--accent-color) !important;
+            color: white !important;
+        }
+        .report-btns button:first-child {
+            background-color: var(--main-theme-color);
+            color: white;
+        }
+        .report-btns button:last-child {
+            background-color: var(--danger-color) !important;
+        }
+        
+        #final-report-container table { 
+            width: 100%; 
+            border-collapse: collapse;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        #final-report-container th, #final-report-container td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: right;
+            font-weight: 700; 
+        }
+        #final-report-container th { 
+            background-color: var(--main-theme-color); 
+            color: white; 
+            font-weight: 900;
+        }
+        .report-total-row { 
+            background-color: var(--background-light); 
+            font-weight: 900; 
+            font-size: 1.1em; 
+            color: var(--danger-color);
+        }
+
+        /* ------------------------------------------------ */
+        /* تنسيقات المودال (نافذة كلمة السر للحذف) */
+        /* ------------------------------------------------ */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: linear-gradient(135deg, var(--main-theme-color) 0%, var(--accent-color) 100%);
+            justify-content: center;
+            align-items: center;
+            display: flex; 
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            padding: 40px; 
+            border: none; 
+            width: 90%;
+            max-width: 400px; 
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        
+        .modal-content h3 {
+            color: var(--danger-color);
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            font-weight: 900; 
+        }
+
+        .modal-content p {
+            font-size: 1.1em;
+            font-weight: 700; 
+            color: var(--text-dark);
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid var(--danger-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 18px; 
+            text-align: center;
+            font-weight: 900; 
+        }
+
+        .modal-content .modal-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-content .confirm-btn {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        .modal-content .confirm-btn:hover {
+            background-color: #C62828;
+        }
+        
+        .modal-content .cancel-btn {
+            background-color: #eee;
+            color: var(--text-dark);
+        }
+        .modal-content .cancel-btn:hover {
+            background-color: #ddd;
+        }
+
+        .modal-content .modal-btns button {
+            flex-grow: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 800; 
+            font-size: 1.1em;
+            transition: background-color 0.2s;
+        }
+
+        .logout-btn {
+            background-color: #6c757d !important;
+            color: white !important;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px auto;
+            }
+            .items-grid {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(19, minmax(50px, 1fr)); 
+                grid-auto-flow: column; 
+                
+                grid-auto-columns: auto;
+                max-height: none;
+                gap: 8px; 
+            }
+            .item-box {
+                padding: 6px; 
+            }
+            .item-name {
+                font-size: 0.9em; 
+                font-weight: 700;
+            }
+            .item-number {
+                font-size: 0.85em; 
+                padding: 2px 4px; 
+            }
+            .quantity-input {
+                width: 45px; 
+                padding: 4px; 
+                font-size: 0.9em; 
+            }
+
+            .control-flex {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch; 
+            }
+            .control-flex > div {
+                min-width: 100%;
+            }
+            .report-btns {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Theme toggle -->
-  <button id="theme-toggle" title="تبديل الثيم">🌙</button>
 
-  <div class="wrap">
-    <div class="header">
-      <div class="title">
-        <div class="logo">CS</div>
-        <div>
-          <h1>Cashier System</h1>
-          <div class="subtitle" id="statusSubtitle">متصل — تزامن لحظي</div>
+    <div id="login-screen">
+        <div class="login-box">
+            <h2>تسجيل الدخول</h2>
+            <div class="input-group">
+                <select id="user-select">
+                    <option value="admin">مدير النظام (Admin)</option>
+                    <option value="محمد">محمد</option>
+                    <option value="احمد">احمد</option>
+                    <option value="محمود">محمود</option>
+                    <option value="سيد">سيد</option>
+                    <option value="على">على</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password-input" placeholder="كلمة المرور">
+            </div>
+            <button onclick="login()">دخول</button>
         </div>
-      </div>
-      <div class="controls">
-        <button class="btn" id="btnSave">حفظ</button>
-        <button class="btn primary" id="btnEnd">إنهاء الفترة</button>
-      </div>
     </div>
 
-    <!-- Left panel -->
-    <div class="panel">
-      <h2>قائمة الأصناف</h2>
-      <div class="items" id="itemsContainer"></div>
-      <div style="margin-top:10px; display:flex; gap:8px;">
-        <input id="newItemName" placeholder="اسم صنف جديد" style="flex:1; padding:10px; border-radius:10px; border:none; background:rgba(255,255,255,0.02); color:inherit; outline:none;">
-        <button class="btn" id="addItemBtn">إضافة</button>
-      </div>
-    </div>
+    <div id="cashier-content" class="container">
+        <h1>برنامج تسجيل الأصناف - <span id="current-user-display"></span></h1>
 
-    <!-- Right panel -->
-    <div class="summary">
-      <div class="row">
-        <div>
-          <div class="small">إجمالي العناصر</div>
-          <div class="big" id="totalItems">0</div>
+        <div id="item-inputs-container">
+            </div>
+
+        <div id="amount-input-panel">
+            <h2>
+                تسجيل إجمالي الفترة الحالية
+            </h2>
+            <div class="control-flex">
+                <div>
+                    <label for="total-amount">
+                        المبلغ الإجمالي المسجل من الماكينة:
+                    </label>
+                    <input type="number" id="total-amount" placeholder="أدخل مبلغ الإجمالي هنا" min="0">
+                </div>
+                
+                <div class="summary-box">
+                    <p>إجمالي عدد الوحدات:</p>
+                    <span id="total-orders-count">0</span>
+                </div>
+                
+                <div>
+                    <button class="end-period-btn" onclick="promptEndPeriod()">
+                        إنهاء الفترة وتسجيل المبلغ
+                    </button>
+                </div>
+            </div>
         </div>
-        <div>
-          <div class="small">الإجمالي الكلي</div>
-          <div class="big" id="totalAmount">0</div>
+        <div class="control-panel">
+            <h2>خيارات السجل والتقارير</h2>
+            <div class="report-btns">
+                <button onclick="promptDailyReport()"><i class="fas fa-file-invoice"></i> إعداد وعرض تقرير المبيعات التفصيلي</button>
+                <button id="delete-btn" onclick="clearAllData()" style="display: none;"><i class="fas fa-trash"></i> حذف السجل بالكامل (وردية جديدة)</button>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+            </div>
         </div>
-      </div>
 
-      <div style="display:flex; gap:8px; align-items:center;">
-        <input id="passwordInput" type="password" placeholder="كلمة مرور المدير للمسح" style="flex:1; padding:10px; border-radius:10px; border:none; background:rgba(255,255,255,0.02); color:inherit; outline:none;">
-        <button class="btn warn" id="btnClear">مسح السجل</button>
-      </div>
+        <div id="final-report-container" style="display: none;">
+            <h2>تقرير مبيعات الفترة/اليوم الكلي</h2>
+            <p><strong>تاريخ التقرير:</strong> <span id="report-date"></span></p>
+            <div id="detailed-sales-summary">
+                </div>
+        </div>
 
-      <div class="actions">
-        <button class="btn" id="btnExport">تصدير JSON</button>
-        <button class="btn" id="btnImport">استيراد JSON</button>
-        <input id="importFile" type="file" accept=".json" style="display:none">
-      </div>
+        <div id="past-periods">
+            <h2>سجل الفترات السابقة</h2>
+            </div>
 
-      <h2 style="margin-top:12px;">سجل الفترات</h2>
-      <div class="periods" id="periodsContainer"></div>
-
-      <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
-        <div class="small">المستخدم الحالي:</div>
-        <div id="currentUser" class="small" style="font-weight:700">ضيف</div>
-      </div>
+    </div>
+    
+    <div id="password-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>تأكيد عملية الحذف</h3>
+            <p>الرجاء إدخال كلمة سر المدير لحذف السجل بالكامل:</p>
+            <input type="password" id="password-input-delete" placeholder="كلمة السر">
+            <div class="modal-btns">
+                <button class="confirm-btn" onclick="executeClearData()">تأكيد الحذف</button>
+                <button class="cancel-btn" onclick="closeModal()">إلغاء</button>
+            </div>
+        </div>
     </div>
 
-    <div class="foot">مبني مع ❤️ — تزامن عبر Firebase Realtime Database</div>
-  </div>
-
-  <!-- password modal -->
-  <div id="password-modal">
-    <div class="modal-content">
-      <h3>تأكيد حذف السجل</h3>
-      <p>لإجراء عملية الحذف النهائية، أدخل كلمة سر المدير:</p>
-      <input type="password" id="password-input-delete" placeholder="كلمة سر الحذف">
-      <div style="display:flex; gap:10px; margin-top:14px;">
-        <button class="btn primary" style="flex:1" id="confirm-delete-btn">تأكيد الحذف</button>
-        <button style="flex:1; background:#888; color:#fff; border:none; padding:10px 14px; border-radius:8px;" id="cancel-delete-btn">إلغاء</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Firebase compat SDKs -->
+  <!-- Firebase compat SDKs (app + database + app-check) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-check-compat.js"></script>
 
-  <script>
-    /***** CONFIG - استخدم إعدادات Firebase الخاصة بك *****/
-    const firebaseConfig = {
-      apiKey: "AIzaSyB3k-ETF91TYj-apZynpUOU0D_--aRftSQ",
-      authDomain: "cashier-system-18a2f.firebaseapp.com",
-      databaseURL: "https://cashier-system-18a2f-default-rtdb.firebaseio.com",
-      projectId: "cashier-system-18a2f",
-      storageBucket: "cashier-system-18a2f.firebasestorage.app",
-      messagingSenderId: "50951955741",
-      appId: "1:50951955741:web:abb17d413ac812700c2df4",
-      measurementId: "G-Z21M1743KV"
-    };
-    /*****************************************************/
+    <script>
+        // **********************************************
+        // ----------------- دوال الأمان (كلمات السر) -----------------
+        // **********************************************
+        const LOGIN_PASSWORD = "1010"; 
+        const CASHIER_PASSWORD = "5050"; 
+        const DELETION_PASSWORD = "111975"; 
 
-    // init firebase (compat)
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const PERIODS_REF = db.ref('cashierPeriods');
+        let currentUser = "";
 
-    // App Check activation (reCAPTCHA Enterprise Site Key)
-    // → استبدل المفتاح بالمفتاح الذي أنشأته في Google Cloud (تم إعطاؤك المفتاح بالفعل)
-    try {
-      const appCheck = firebase.appCheck();
-      // ضع هنا Site Key الخاص بك:
-      appCheck.activate('6Lfau-ErAAAAABSABhgaE7BF0TtdMsWxv4lPehW4', true);
-      console.log('App Check activated');
-    } catch(e){
-      console.warn('App Check activation failed', e);
-    }
+        // **********************************************
+        // ------------- Firebase configuration -----------
+        // **********************************************
+        const firebaseConfig = {
+          apiKey: "AIzaSyB3k-ETF91TYj-apZynpUOU0D_--aRftSQ",
+          authDomain: "cashier-system-18a2f.firebaseapp.com",
+          databaseURL: "https://cashier-system-18a2f-default-rtdb.firebaseio.com",
+          projectId: "cashier-system-18a2f",
+          storageBucket: "cashier-system-18a2f.firebasestorage.app",
+          messagingSenderId: "50951955741",
+          appId: "1:50951955741:web:abb17d413ac812700c2df4",
+          measurementId: "G-Z21M1743KV"
+        };
 
-    /**********************
-     * حسابات المستخدمين وكلمات السر (نفس النظام الموجود لديك)
-     **********************/
-    const USER_ACCOUNTS = {
-      "مدير عام": { password: "1010", role: "admin" },
-      "محمد": { password: "5050", role: "cashier" },
-      "علي": { password: "5050", role: "cashier" },
-      "سيد": { password: "5050", role: "cashier" },
-      "احمد": { password: "5050", role: "cashier" },
-      "طه": { password: "5050", role: "cashier" },
-      "محمود": { password: "5050", role: "cashier" },
-      "سعيد": { password: "5050", role: "cashier" },
-      "ممدوح": { password: "5050", role: "cashier" }
-    };
+        // init firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const PERIODS_REF = db.ref('cashierPeriods');
+        const CURRENT_STATE_REF = db.ref('currentState');
 
-    const DELETION_PASSWORD = "111975";
-    let currentUser = null;
-    let pastPeriods = [];
-
-    /**********************
-     * الأصناف (ترتيب ثابت كما في ملفك)
-     **********************/
-    const ALL_ITEMS_IN_ORDER = [
-      "شاورمه كيذر","شاورمه شامي","شاورمه فينا","شاورمه طبق",
-      "مكرونه","كبيبه","ورق عنب","سلطه خضراء","طماطم مخلل","باذنجان مخلل","شيبسي","بابا غنوج","طرشي",
-      "كفته ص","سجق ص","كبده ص","مخ ص","روزبيف ص","جبنه رومي","فراخ بانيه ص","بيف برجر","سوسيس ",
-      "كفته شامي","سجق شامي","كبده شامي","مخ شامي","روزبيف شامي","سوسيس شامي","فراخ شامي",
-      "كفته فينا","سجق فينا","كبده فينا","مخ فينا","روزبيف فينا","سوسيس فينا","فراخ فينا",
-      "جبنه رومي فينا",
-      " مانجو"," فراوله"," رمان"," برتقال","عنب"," جوافه"," موز"," كانتالوب","كوكتيل ",
-      "كولا","سبرايت","فانتا","دايت ","مياه معدنيه",
-      "ليمون","بطيخ","كانز ص","كانز ك"
-    ];
-
-    /**********************
-     * DOM refs
-     **********************/
-    const itemsContainer = document.getElementById('itemsContainer');
-    const totalItemsEl = document.getElementById('totalItems');
-    const totalAmountEl = document.getElementById('totalAmount');
-    const periodsContainer = document.getElementById('periodsContainer');
-    const btnEnd = document.getElementById('btnEnd');
-    const btnSave = document.getElementById('btnSave');
-    const btnClear = document.getElementById('btnClear');
-    const passwordInput = document.getElementById('passwordInput');
-    const addItemBtn = document.getElementById('addItemBtn');
-    const newItemName = document.getElementById('newItemName');
-    const btnExport = document.getElementById('btnExport');
-    const btnImport = document.getElementById('btnImport');
-    const importFile = document.getElementById('importFile');
-    const currentUserEl = document.getElementById('currentUser');
-    const statusSubtitle = document.getElementById('statusSubtitle');
-    const themeToggle = document.getElementById('theme-toggle');
-
-    /* utils */
-    function idFromName(n){ return 'input-' + n.replace(/\s|\/|\(|\)|[^a-zA-Z0-9\u0600-\u06FF]/g,'_'); }
-
-    /**********************
-     * UI builders
-     **********************/
-    function populateUsernameSelect(){
-      const sel = document.getElementById('username-select');
-      // if select exists (kept from original) populate it; if not, skip
-      if(!sel) return;
-      Array.from(sel.options).forEach((opt, i) => { if(i>0) opt.remove(); });
-      for(const u in USER_ACCOUNTS){
-        const o = document.createElement('option');
-        o.value = u;
-        o.textContent = u + (USER_ACCOUNTS[u].role === 'admin' ? ' (مدير)' : '');
-        sel.appendChild(o);
-      }
-    }
-
-    function ensureState(){
-      ALL_ITEMS_IN_ORDER.forEach(it=> { if (window.currentState === undefined) window.currentState = {}; if (window.currentState[it] === undefined) window.currentState[it] = 0; });
-    }
-
-    function createItemInputs(){
-      itemsContainer.innerHTML = '';
-      const grid = document.createElement('div');
-      grid.className = 'items-grid';
-      // simple layout: create rows for each item
-      ALL_ITEMS_IN_ORDER.forEach((itemName, idx) => {
-        const safeId = idFromName(itemName);
-        const box = document.createElement('div');
-        box.className = 'item';
-        box.innerHTML = `
-          <div style="display:flex; gap:10px; align-items:center;">
-            <div class="badge">${idx+1}</div>
-            <div>
-              <div class="item-name">${itemName}</div>
-            </div>
-          </div>
-          <div class="qty">
-            <button class="dec" data-for="${itemName}">−</button>
-            <input id="${safeId}" class="quantity-input" type="number" min="0" value="${(window.currentState && window.currentState[itemName]) || 0}">
-            <button class="inc" data-for="${itemName}">+</button>
-          </div>
-        `;
-        itemsContainer.appendChild(box);
-      });
-
-      // listeners
-      document.querySelectorAll('.quantity-input').forEach(inp=>{
-        inp.addEventListener('input', e=>{
-          const matched = ALL_ITEMS_IN_ORDER.find(it => idFromName(it) === inp.id);
-          if(!matched) return;
-          const value = Math.max(0, Math.floor(Number(inp.value) || 0));
-          if(!window.currentState) window.currentState = {};
-          window.currentState[matched] = value;
-          updateSummary();
-          publishCurrentStateToFirebase();
-        });
-      });
-      document.querySelectorAll('.inc').forEach(btn=>{
-        btn.addEventListener('click', ()=>{
-          const name = btn.dataset.for;
-          if(!window.currentState) window.currentState = {};
-          window.currentState[name] = (window.currentState[name] || 0) + 1;
-          const el = document.getElementById(idFromName(name));
-          if(el) el.value = window.currentState[name];
-          updateSummary();
-          publishCurrentStateToFirebase();
-        });
-      });
-      document.querySelectorAll('.dec').forEach(btn=>{
-        btn.addEventListener('click', ()=>{
-          const name = btn.dataset.for;
-          if(!window.currentState) window.currentState = {};
-          window.currentState[name] = Math.max(0, (window.currentState[name] || 0) - 1);
-          const el = document.getElementById(idFromName(name));
-          if(el) el.value = window.currentState[name];
-          updateSummary();
-          publishCurrentStateToFirebase();
-        });
-      });
-    }
-
-    function updateSummary(){
-      let totalItems = 0;
-      let totalAmount = 0;
-      ALL_ITEMS_IN_ORDER.forEach(it=>{
-        const qty = Number((window.currentState && window.currentState[it]) || 0);
-        totalItems += qty;
-        // price unknown in original; keep amount as 0 unless user inputs via "total-amount"
-      });
-      totalItemsEl.textContent = totalItems;
-      // totalAmount is taken from input if set
-      const val = Number(document.getElementById('total-amount').value || 0);
-      totalAmountEl.textContent = val.toFixed(2);
-    }
-
-    // Export / Import JSON
-    btnExport.addEventListener('click', ()=>{
-      const data = { items: ALL_ITEMS_IN_ORDER, currentState: window.currentState || {}, pastPeriods };
-      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'cashier-backup.json'; document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
-    });
-
-    btnImport.addEventListener('click', ()=> importFile.click());
-    importFile.addEventListener('change', async (e)=>{
-      const f = e.target.files[0];
-      if(!f) return;
-      const txt = await f.text();
-      try{
-        const data = JSON.parse(txt);
-        if (Array.isArray(data.items)) {
-          // merge item list but preserve order
-          // (we keep your original items list to avoid breaking)
+        // Activate App Check (reCAPTCHA Enterprise) - استخدم المفتاح الذي أنشأته
+        try {
+          const appCheck = firebase.appCheck();
+          appCheck.activate('6Lfau-ErAAAAABSABhgaE7BF0TtdMsWxv4lPehW4', true);
+          console.log('App Check activated');
+        } catch (e) {
+          console.warn('App Check activation failed:', e);
         }
-        window.currentState = data.currentState || {};
-        pastPeriods = data.pastPeriods || [];
-        saveData();
-        renderAll();
-        alert('تم استيراد البيانات');
-      }catch(err){
-        alert('خطأ في ملف الاستيراد');
-      }
-    });
 
-    // periods UI
-    function renderPeriods(){
-      periodsContainer.innerHTML = '';
-      if(!pastPeriods || !pastPeriods.length){
-        periodsContainer.innerHTML = '<div class="small" style="color:var(--muted);">لا توجد فترات بعد</div>';
-        return;
-      }
-      [...pastPeriods].reverse().forEach((p, idx)=>{
-        const el = document.createElement('div');
-        el.className = 'period-card';
-        el.innerHTML = `
-          <div>
-            <div style="font-weight:800">فترة ${p.id || (idx+1)}</div>
-            <div class="small">التاريخ: ${p.date || p.when || ''} ${p.time || ''}</div>
-            <div class="small">بواسطة: ${p.user || 'ضيف'}</div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-weight:900; color:var(--danger);">${p.totalAmount || 0}</div>
-            <div class="small">${p.totalOrders || 0} عنصر</div>
-          </div>
-        `;
-        periodsContainer.appendChild(el);
-      });
-    }
+        // **********************************************
+        // ----------------- تعريف الأصناف -----------------
+        // **********************************************
+        const ALL_ITEMS_IN_ORDER = [
+            "شاورمه كيذر", "شاورمه شامي", "شاورمه فينا", "شاورمه طبق",
+            "مكرونه", "كبيبه", "ورق عنب", "سلطه خضراء", "طماطم مخلل", "باذنجان مخلل", "شيبسي", "بابا غنوج", "طرشي",
+            "كفته ص","سجق ص","كبده ص","مخ ص","روزبيف ص","جبنه رومي","فراخ بانيه ص","بيف برجر","سوسيس ",
+            "كفته شامي","سجق شامي","كبده شامي","مخ شامي","روزبيف شامي","سوسيس شامي","فراخ شامي",
+            "كفته فينا","سجق فينا","كبده فينا","مخ فينا","روزبيف فينا","سوسيس فينا","فراخ فينا",
+            "جبنه رومي فينا",
+            " مانجو"," فراوله"," رمان"," برتقال","عنب"," جوافه"," موز"," كانتالوب","كوكتيل ",
+            "كولا","سبرايت","فانتا","دايت ","مياه معدنيه",
+            "ليمون","بطيخ","كانز ص","كانز ك"
+        ];
 
-    // end period
-    btnEnd.addEventListener('click', ()=>{
-      const total = Number(document.getElementById('total-amount').value || 0);
-      const when = Date.now();
-      if(isNaN(total) || total <= 0){ alert('ادخل قيمة الماكينة'); return; }
-      const totalOrders = Number(totalItemsEl.textContent) || 0;
-      if(totalOrders === 0){ alert('لا يوجد أصناف مسجلة في هذه الفترة.'); return; }
-      const periodLog = {
-        id: pastPeriods.length + 1,
-        time: new Date().toLocaleTimeString('ar-EG'),
-        date: new Date().toLocaleDateString('ar-EG'),
-        totalAmount: total,
-        totalOrders,
-        itemsLog: {...(window.currentState||{})},
-        user: currentUser ? currentUser.name : 'غير معروف'
-      };
-      pastPeriods.push(periodLog);
-      saveData();
-      displayPastPeriods();
-      // reset inputs
-      document.getElementById('total-amount').value = '';
-      ALL_ITEMS_IN_ORDER.forEach(it => {
-        const el = document.getElementById(idFromName(it));
-        if(el) el.value = 0;
-      });
-      window.currentState = {};
-      updateSummary();
-      publishCurrentStateToFirebase();
-      alert('تم إنهاء الفترة وحفظها.');
-    });
+        let pastPeriods = [];
+        let suppressLocalUpdate = false; // لتجنب حلقات التحديث عند الكتابة إلى Firebase
+        let lastPublishAt = 0;
 
-    function displayPastPeriods(){ renderPeriods(); }
+        /**********************
+         * Helpers
+         **********************/
+        function idFromName(n){ return 'input-' + n.replace(/\s|\/|\(|\)|[^a-zA-Z0-9\u0600-\u06FF]/g,'_'); }
 
-    function generateDailySalesReport(){
-      if(pastPeriods.length === 0){ alert("لا يوجد بيانات مسجلة لإنشاء التقرير."); return; }
-      const combined = {}; let money = 0, units = 0;
-      pastPeriods.forEach(p => {
-        money += Number(p.totalAmount) || 0;
-        units += Number(p.totalOrders) || 0;
-        for(const it in p.itemsLog) combined[it] = (combined[it] || 0) + p.itemsLog[it];
-      });
-      const ordered = ALL_ITEMS_IN_ORDER;
-      const rows = Object.keys(combined).map(k => `<tr><td style="padding:8px;border:1px solid rgba(255,255,255,0.04)">${k}</td><td style="padding:8px;border:1px solid rgba(255,255,255,0.04)">${combined[k]}</td></tr>`).join('');
-      const reportHTML = `<table style="width:100%;border-collapse:collapse"><thead><tr><th>الصنف</th><th>الكمية</th></tr></thead><tbody>${rows}</tbody></table>`;
-      document.getElementById('report-date').textContent = new Date().toLocaleDateString('ar-EG');
-      document.getElementById('detailed-sales-summary').innerHTML = reportHTML;
-      document.getElementById('final-report-container').style.display = 'block';
-      setTimeout(()=> document.getElementById('final-report-container').scrollIntoView({behavior:'smooth'}),50);
-    }
-
-    function promptDailyReport(){ generateDailySalesReport(); }
-
-    function clearAllData(){ // show modal confirms deletion
-      if(!currentUser || currentUser.role !== 'admin'){ alert("صلاحية حذف السجل مقتصرة على المدير."); return; }
-      document.getElementById('password-modal').style.display = 'flex';
-      document.getElementById('password-input-delete').focus();
-    }
-
-    document.getElementById('cancel-delete-btn').addEventListener('click', ()=> { document.getElementById('password-modal').style.display='none'; });
-
-    document.getElementById('confirm-delete-btn').addEventListener('click', executeClearData);
-
-    function executeClearData(){
-      const entered = document.getElementById('password-input-delete').value;
-      document.getElementById('password-modal').style.display = 'none';
-      document.getElementById('password-input-delete').value = '';
-      if(entered === DELETION_PASSWORD){
-        try{ localStorage.removeItem('cashierPeriods'); } catch(e){}
-        pastPeriods = [];
-        PERIODS_REF.set([]).catch(()=>{});
-        displayPastPeriods();
-        alert('تم حذف السجل بالكامل.');
-      } else {
-        alert('كلمة السر غير صحيحة.');
-      }
-    }
-
-    /**********************
-     * saveData() & loadData() with Firebase + localStorage
-     **********************/
-    function saveData(){
-      try{ localStorage.setItem('cashierPeriods', JSON.stringify(pastPeriods)); } catch(e){ console.warn('local save failed', e); }
-      PERIODS_REF.set(pastPeriods)
-        .then(()=> console.log('Saved to Firebase'))
-        .catch(e=>console.warn('Firebase save error', e));
-    }
-
-    function loadData(){
-      // read once from firebase
-      PERIODS_REF.once('value').then(snapshot=>{
-        if(snapshot && snapshot.exists()){
-          pastPeriods = snapshot.val() || [];
-          displayPastPeriods();
-          updateSummary();
-          console.log('Loaded from Firebase');
-        } else {
-          // fallback to localStorage
-          const s = localStorage.getItem('cashierPeriods');
-          if(s){ try{ pastPeriods = JSON.parse(s); } catch(e){ pastPeriods = []; } displayPastPeriods(); updateSummary(); }
+        function getAllItemNames() {
+            const names = [];
+            let itemCounter = 1;
+            ALL_ITEMS_IN_ORDER.forEach(item => { names.push({ name: item, number: itemCounter++ }); });
+            return names;
         }
-      }).catch(err=>{
-        console.warn('Firebase read failed, fallback to local', err);
-        const s = localStorage.getItem('cashierPeriods');
-        if(s){ try{ pastPeriods = JSON.parse(s); } catch(e){ pastPeriods = []; } displayPastPeriods(); updateSummary(); }
-      });
 
-      // realtime updates
-      PERIODS_REF.on('value', snap=>{
-        const val = snap.val();
-        if(val){
-          pastPeriods = val;
-          displayPastPeriods();
-          updateSummary();
-          console.log('Realtime update applied');
+        /**********************
+         * UI builders
+         **********************/
+        function createItemInputs() {
+            const container = document.getElementById('item-inputs-container');
+            if(container.querySelector('.items-grid')) {
+                 // already created
+                 return;
+            }
+
+            const allItems = getAllItemNames();
+            const gridDiv = document.createElement('div');
+            gridDiv.className = 'items-grid';
+            container.appendChild(gridDiv);
+
+            allItems.forEach(itemData => {
+                const item = itemData.name;
+                const itemNumber = itemData.number;
+                const safeId = idFromName(item);
+
+                const itemBox = document.createElement('div');
+                itemBox.className = 'item-box';
+
+                itemBox.innerHTML = `
+                    <div class="item-name-group">
+                        <span class="item-number">${itemNumber}</span>
+                        <span class="item-name">${item}</span>
+                    </div>
+                    <input type="number" id="${safeId}" class="quantity-input" value="0" min="0"
+                           oninput="onQuantityChange(event, '${item}')"
+                           onclick="this.select()">
+                `;
+
+                gridDiv.appendChild(itemBox);
+            });
         }
-      });
-    }
 
-    /**********************
-     * publish current UI state to Firebase (simple sync)
-     **********************/
-    function publishCurrentStateToFirebase(){
-      const payload = {
-        items: window.currentState || {},
-        lastUpdatedAt: Date.now(),
-        lastUpdatedBy: currentUser ? currentUser.name : 'guest'
-      };
-      db.ref('currentState').set(payload).catch(()=>{});
-      db.ref('meta').set({ lastUpdatedAt: payload.lastUpdatedAt, lastUpdatedBy: payload.lastUpdatedBy }).catch(()=>{});
-    }
+        /**********************
+         * Quantity change -> publish local & remote
+         **********************/
+        function onQuantityChange(e, itemName){
+          // called on input event
+          if (suppressLocalUpdate) return; // ignore updates that came from remote
+          // read values into currentState object
+          const all = getAllItemNames().map(i=>i.name);
+          const state = {};
+          all.forEach(it=>{
+            const el = document.getElementById(idFromName(it));
+            if(el) state[it] = Math.max(0, Math.floor(Number(el.value) || 0));
+          });
+          // publish debounced
+          publishCurrentState(state);
+          updateSummary(); // update totals immediately
+        }
 
-    /**********************
-     * Authentication (keep local select login as-is)
-     **********************/
-    function populateLoginSelectAndInit(){
-      // if select exists, populate it
-      const sel = document.getElementById('username-select');
-      if(!sel) return;
-      Array.from(sel.options).forEach((opt,i)=>{ if(i>0) opt.remove(); });
-      for(const u in USER_ACCOUNTS){
-        const o = document.createElement('option'); o.value = u; o.textContent = u + (USER_ACCOUNTS[u].role==='admin'?' (مدير)':''); sel.appendChild(o);
-      }
-    }
+        // debounce publisher
+        let publishTimeout = null;
+        function publishCurrentState(state){
+          // throttle: don't publish more often than once per 800ms
+          if(publishTimeout) clearTimeout(publishTimeout);
+          publishTimeout = setTimeout(()=>{
+            lastPublishAt = Date.now();
+            try {
+              // mark that this write came from client so we can ignore immediate incoming callback
+              suppressLocalUpdate = true;
+              CURRENT_STATE_REF.set({
+                items: state,
+                lastUpdatedAt: Date.now(),
+                lastUpdatedBy: currentUser || 'guest'
+              }).catch(()=>{});
+              // after small delay allow local updates again
+              setTimeout(()=> { suppressLocalUpdate = false; }, 600);
+              // also save local backup
+              try{ localStorage.setItem('currentStateBackup', JSON.stringify({items: state, ts: Date.now()})); }catch(e){}
+            } catch(e) {
+              console.warn('publish error', e);
+              suppressLocalUpdate = false;
+            }
+          }, 250);
+        }
 
-    function login(){
-      const sel = document.getElementById('username-select');
-      if(!sel) return; // if select not present in page (older UI), skip
-      const enteredUsername = sel.value;
-      const enteredPassword = document.getElementById('password-input').value;
-      if(!enteredUsername){ alert("الرجاء اختيار اسم المستخدم."); return; }
-      const user = USER_ACCOUNTS[enteredUsername];
-      if(user && enteredPassword === user.password){
-        currentUser = { name: enteredUsername, role: user.role };
-        document.getElementById('login-screen') && (document.getElementById('login-screen').style.display = 'none');
-        document.getElementById('cashier-content') && (document.getElementById('cashier-content').style.display = 'block');
-        document.querySelector('#cashier-content h1') && (document.querySelector('#cashier-content h1').textContent = `برنامج تسجيل الأصناف (المستخدم: ${currentUser.name})`);
-        updatePermissionsUI();
-        createItemInputs();
-        currentUserEl.textContent = currentUser.name;
-      } else {
-        alert("اسم المستخدم أو كلمة المرور غير صحيحة.");
-      }
-    }
+        /**********************
+         * Apply remote state to inputs
+         **********************/
+        function applyRemoteState(remote){
+          if(!remote || !remote.items) return;
+          // set inputs but avoid changing focused input (to not interrupt user typing)
+          Object.keys(remote.items).forEach(item => {
+            const el = document.getElementById(idFromName(item));
+            if(!el) return;
+            // don't overwrite if the user is currently focused on this input
+            if(document.activeElement === el) return;
+            // update value
+            el.value = Math.max(0, Math.floor(Number(remote.items[item] || 0)));
+          });
+          updateSummary();
+        }
 
-    function logout(){
-      if(!confirm("هل أنت متأكد من تسجيل الخروج؟")) return;
-      currentUser = null;
-      document.getElementById('cashier-content') && (document.getElementById('cashier-content').style.display = 'none');
-      document.getElementById('login-screen') && (document.getElementById('login-screen').style.display = 'flex');
-      document.getElementById('username-select') && (document.getElementById('username-select').value = '');
-      document.getElementById('password-input') && (document.getElementById('password-input').value = '');
-      document.getElementById('final-report-container') && (document.getElementById('final-report-container').style.display = 'none');
-      document.querySelectorAll('.quantity-input').forEach(i => i.value = 0);
-      document.getElementById('total-amount').value = '';
-      updateSummary();
-    }
+        /**********************
+         * saveData / loadData for periods (local + remote)
+         **********************/
+        function saveData(){
+          // save locally
+          try{ localStorage.setItem('cashierPeriods', JSON.stringify(pastPeriods)); }catch(e){}
 
-    function updatePermissionsUI(){
-      const btn = document.getElementById('clear-data-btn');
-      if(!btn) return;
-      if(currentUser && currentUser.role === 'admin') btn.style.display = 'block';
-      else btn.style.display = 'none';
-    }
+          // save to firebase
+          PERIODS_REF.set(pastPeriods).catch(e => console.warn('periods save error', e));
+        }
 
-    /**********************
-     * Init & events
-     **********************/
-    document.addEventListener('DOMContentLoaded', ()=>{
-      populateLoginSelectAndInit();
-      // If your UI uses login-screen/hiding show/hide, keep as is. Otherwise render directly.
-      // initialize state & UI
-      if(!window.currentState) window.currentState = {};
-      createItemInputs();
-      loadData();
-      // attach some buttons
-      btnSave.addEventListener('click', ()=> { saveData(); alert('تم الحفظ'); });
-      btnClear.addEventListener('click', ()=> { const pw = passwordInput.value || ''; if(pw !== DELETION_PASSWORD){ alert('كلمة المرور غير صحيحة'); return; } if(!confirm('مسح السجل بالكامل؟')) return; pastPeriods=[]; saveData(); displayPastPeriods(); alert('تم المسح'); });
-      addItemBtn.addEventListener('click', ()=>{
-        const name = (newItemName.value||'').trim();
-        if(!name) return alert('ادخل اسم صنف'); ALL_ITEMS_IN_ORDER.push(name); window.currentState[name]=0; newItemName.value=''; createItemInputs();
-      });
-      btnEnd && (btnEnd.addEventListener && btnEnd.addEventListener('click', ()=>{})); // handler already set above
-      btnExport && (btnExport.addEventListener && btnExport.addEventListener('click', ()=>{})); // already set
-      btnImport && (btnImport.addEventListener && btnImport.addEventListener('click', ()=>{}));
-      // theme
-      (function(){ const saved = localStorage.getItem('cs_theme_dark'); if(saved === '0') setTheme(false); else setTheme(true); })();
-      themeToggle.addEventListener('click', ()=> setTheme(!(document.body.classList.contains('light'))));
-      // autosave publishes state periodically
-      setInterval(()=> { publishCurrentStateToFirebase(); }, 20000);
-    });
+        function loadData(){
+          // try to read periods from firebase first
+          PERIODS_REF.once('value').then(snapshot=>{
+            if(snapshot && snapshot.exists()){
+              pastPeriods = snapshot.val() || [];
+              displayPastPeriods();
+              updateSummary();
+              console.log('Loaded periods from Firebase');
+            } else {
+              // fallback to local
+              const s = localStorage.getItem('cashierPeriods');
+              if(s){ try{ pastPeriods = JSON.parse(s); } catch(e){ pastPeriods = []; } displayPastPeriods(); updateSummary(); }
+            }
+          }).catch(err=>{
+            console.warn('Firebase read failed, fallback to local', err);
+            const s = localStorage.getItem('cashierPeriods');
+            if(s){ try{ pastPeriods = JSON.parse(s); } catch(e){ pastPeriods = []; } displayPastPeriods(); updateSummary(); }
+          });
 
-    /**********************
-     * Theme toggle
-     **********************/
-    function setTheme(light){
-      if(light){ document.body.classList.add('light'); document.getElementById('theme-toggle').textContent='☀️'; }
-      else { document.body.classList.remove('light'); document.getElementById('theme-toggle').textContent='🌙'; }
-      localStorage.setItem('cs_theme_dark', light ? '0' : '1');
-    }
+          // realtime listener for periods updates (so all clients see same pastPeriods)
+          PERIODS_REF.on('value', snap=>{
+            const val = snap.val();
+            if(val){
+              pastPeriods = val;
+              displayPastPeriods();
+              updateSummary();
+              console.log('Realtime periods update applied');
+            }
+          });
 
-  </script>
+          // realtime listener for current state
+          CURRENT_STATE_REF.on('value', snap=>{
+            const val = snap.val();
+            if(val && val.items){
+              // apply remote but avoid clobbering user typing
+              if (!suppressLocalUpdate) {
+                applyRemoteState(val);
+                console.log('Applied remote currentState update');
+              }
+            } else {
+              // if no remote state, try local backup
+              const bk = localStorage.getItem('currentStateBackup');
+              if(bk){
+                try{
+                  const parsed = JSON.parse(bk);
+                  if(parsed && parsed.items) applyRemoteState(parsed);
+                }catch(e){}
+              }
+            }
+          });
+        }
+
+        /**********************
+         * Rest of your original functions (little adjustments)
+         **********************/
+        function updateSummary() {
+            let totalCount = 0;
+            const allItems = getAllItemNames().map(i => i.name);
+            
+            allItems.forEach(item => {
+                const safeId = idFromName(item);
+                const inputElement = document.getElementById(safeId);
+                
+                if (inputElement) {
+                    const quantity = parseInt(inputElement.value) || 0;
+                    if (quantity > 0) {
+                        totalCount += quantity; 
+                    }
+                }
+            });
+            
+            const totalOrdersEl = document.getElementById('total-orders-count');
+            if(totalOrdersEl) totalOrdersEl.textContent = totalCount;
+        }
+
+        function getCurrentItemsLog() {
+            const itemsLog = {};
+            const allItems = getAllItemNames().map(i => i.name);
+
+            allItems.forEach(item => {
+                const safeId = idFromName(item);
+                const inputElement = document.getElementById(safeId);
+                const quantity = parseInt(inputElement ? inputElement.value : 0) || 0; 
+                
+                if (quantity > 0) {
+                    itemsLog[item] = quantity;
+                }
+            });
+            return itemsLog;
+        }
+
+        function promptEndPeriod() {
+            const totalInput = document.getElementById('total-amount');
+            const totalAmount = parseFloat(totalInput.value);
+
+            if (isNaN(totalAmount) || totalAmount <= 0) {
+                alert("الرجاء إدخال المبلغ الإجمالي للفترة من الماكينة.");
+                totalInput.focus();
+                return;
+            }
+            endPeriod(totalAmount);
+        }
+
+        function endPeriod(totalAmount) {
+            const totalOrders = parseInt(document.getElementById('total-orders-count').textContent);
+
+            if (totalOrders === 0) {
+                alert("لا يوجد أصناف مسجلة في هذه الفترة.");
+                return;
+            }
+            
+            const currentItemsLog = getCurrentItemsLog();
+            const periodLog = {
+                id: pastPeriods.length + 1,
+                time: new Date().toLocaleTimeString('ar-EG'),
+                date: new Date().toLocaleDateString('ar-EG'),
+                totalAmount: totalAmount, 
+                totalOrders: totalOrders, 
+                itemsLog: currentItemsLog,
+                user: currentUser // إضافة اسم المستخدم
+            };
+
+            pastPeriods.push(periodLog);
+            saveData(); 
+
+            displayPastPeriods();
+
+            document.getElementById('total-amount').value = ''; 
+            
+            getAllItemNames().map(i => i.name).forEach(item => {
+                const safeId = idFromName(item);
+                const inputElement = document.getElementById(safeId);
+                if (inputElement) inputElement.value = 0;
+            });
+            
+            updateSummary();
+
+            alert(`تم تسجيل المبلغ بنجاح. المبلغ الإجمالي المسجل للفترة هو: ${totalAmount}.`); 
+        }
+
+        function displayPastPeriods() {
+            const container = document.getElementById('past-periods');
+            if(!container) return;
+            container.innerHTML = '<h2>سجل الفترات السابقة</h2>'; 
+
+            const formatItemsLog = (log) => {
+                let html = '<ul>';
+                for (const item in log) {
+                    if (log[item] > 0) {
+                        html += `<li><strong>${item}:</strong> <span style="color: var(--accent-color); font-weight: 800;">${log[item]}</span> قطعة</li>`;
+                    }
+                }
+                html += '</ul>';
+                return html;
+            };
+
+            pastPeriods.slice().reverse().forEach(period => {
+                const fullAmount = period.totalAmount; 
+                
+                const logDiv = document.createElement('div');
+                logDiv.className = 'period-log';
+                logDiv.style.cssText = 'padding: 15px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 15px; background-color: #f9f9f9;';
+                logDiv.innerHTML = `
+                    <h3>فترة رقم ${period.id} - ${period.time} (${period.date})</h3>
+                    <p style="font-weight: 700;"><strong>تم التسجيل بواسطة:</strong> ${period.user}</p>
+                    <p style="font-weight: 700;"><strong>الإجمالي المسجل من الماكينة:</strong> <span style="color: var(--danger-color); font-weight: 900; font-size: 1.2em;">${fullAmount}</span></p> 
+                    <p style="font-weight: 700;"><strong>إجمالي عدد الوحدات/القطع المدخلة:</strong> ${period.totalOrders}</p>
+                    <h4 style="font-weight: 800; margin-top: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">تفاصيل الأصناف:</h4>
+                    ${formatItemsLog(period.itemsLog)}
+                `;
+                container.appendChild(logDiv);
+            });
+        }
+
+        function generateDailySalesReport() {
+            if (pastPeriods.length === 0) {
+                alert("لا يوجد بيانات مسجلة لإنشاء التقرير.");
+                return;
+            }
+
+            const combinedSales = {};
+            let totalMoney = 0;
+            let totalUnits = 0;
+
+            pastPeriods.forEach(period => {
+                totalMoney += period.totalAmount;
+                totalUnits += period.totalOrders;
+                for (const item in period.itemsLog) {
+                    combinedSales[item] = (combinedSales[item] || 0) + period.itemsLog[item];
+                }
+            });
+
+            const orderedItems = getAllItemNames().map(i => i.name); 
+            const sortedItems = orderedItems
+                .map(item => [item, combinedSales[item] || 0])
+                .filter(([, quantity]) => quantity > 0);
+
+            const finalTotalMoney = totalMoney.toFixed(2); 
+            const reportContainer = document.getElementById('final-report-container');
+            const summaryDiv = document.getElementById('detailed-sales-summary');
+
+            document.getElementById('report-date').textContent = new Date().toLocaleDateString('ar-EG');
+
+            let tableHTML = '<table>';
+            tableHTML += '<thead><tr><th>الصنف</th><th>الكمية الكلية المباعة</th></tr></thead>';
+            tableHTML += '<tbody>';
+
+            sortedItems.forEach(([item, quantity]) => {
+                tableHTML += `<tr><td>${item}</td><td>${quantity} قطعة</td></tr>`;
+            });
+
+            tableHTML += `<tr class="report-total-row"><td>الإجمالي الكلي للقطع</td><td>${totalUnits} قطعة</td></tr>`;
+            tableHTML += `<tr class="report-total-row"><td>الإجمالي الكلي للمبلغ</td><td>${finalTotalMoney}</td></tr>`; 
+
+            tableHTML += '</tbody></table>';
+
+            summaryDiv.innerHTML = tableHTML;
+            reportContainer.style.display = 'block'; 
+            if (!reportContainer.querySelector('.print-btn')) {
+                 const printBtn = document.createElement('button');
+                 printBtn.className = 'print-btn end-period-btn';
+                 printBtn.style.marginTop = '20px';
+                 printBtn.style.width = 'auto';
+                 printBtn.textContent = 'طباعة التقرير';
+                 printBtn.setAttribute('onclick', 'window.print()');
+                 reportContainer.appendChild(printBtn);
+            }
+            
+            setTimeout(() => {
+                reportContainer.scrollIntoView({ behavior: 'smooth' });
+            }, 50); 
+            
+            alert("تم عرض تقرير مبيعات اليوم التفصيلي في نهاية الصفحة. يمكنك طباعته أو نسخه الآن.");
+        }
+
+        function promptDailyReport() {
+            if (pastPeriods.length === 0) {
+                alert("لا يوجد فترات مسجلة لإعداد التقرير.");
+                return;
+            }
+            document.getElementById('final-report-container').style.display = 'none';
+            generateDailySalesReport();
+        }
+
+        function clearAllData() {
+            if (!confirm("هل أنت متأكد من حذف السجل بالكامل؟ هذه الخطوة لا يمكن التراجع عنها.")) {
+                return;
+            }
+            document.getElementById('password-modal').style.display = 'flex';
+            document.getElementById('password-input-delete').focus(); 
+        }
+
+        function executeClearData() {
+            const enteredPassword = document.getElementById('password-input-delete').value;
+            closeModal(); 
+
+            if (enteredPassword === DELETION_PASSWORD) {
+                try{ localStorage.removeItem('cashierPeriods'); }catch(e){}
+                pastPeriods = [];
+                // push empty to firebase
+                PERIODS_REF.set([]).catch(()=>{});
+                displayPastPeriods();
+                alert("تم حذف السجل بالكامل بنجاح. يمكنك الآن تسجيل وردية/يوم جديد.");
+            } else {
+                alert("كلمة السر غير صحيحة. تم إلغاء عملية الحذف.");
+            }
+        }
+
+        /**********************
+         * Authentication (unchanged)
+         **********************/
+        function login() {
+            const selectedUser = document.getElementById('user-select').value;
+            const enteredPassword = document.getElementById('password-input').value;
+            
+            let isAuthenticated = false;
+            
+            if (selectedUser === "admin" && enteredPassword === LOGIN_PASSWORD) {
+                isAuthenticated = true;
+            } else if (selectedUser !== "admin" && enteredPassword === CASHIER_PASSWORD) {
+                isAuthenticated = true;
+            }
+            
+            if (isAuthenticated) {
+                currentUser = selectedUser;
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('cashier-content').style.display = 'block';
+                document.getElementById('current-user-display').textContent = currentUser;
+                
+                // إظهار زر الحذف فقط للمدير
+                if (currentUser === "admin") {
+                    document.getElementById('delete-btn').style.display = 'block';
+                } else {
+                    document.getElementById('delete-btn').style.display = 'none';
+                }
+                
+                // build UI
+                createItemInputs();
+                // load data + realtime listeners
+                loadData();
+
+                // try to apply currentState immediate if exists
+                CURRENT_STATE_REF.once('value').then(snap=>{
+                  const v = snap.val();
+                  if(v && v.items) applyRemoteState(v);
+                }).catch(()=>{ /* ignore */ });
+
+            } else {
+                alert("اسم المستخدم أو كلمة المرور غير صحيحة.");
+            }
+        }
+
+        function logout() {
+            currentUser = "";
+            document.getElementById('cashier-content').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('password-input').value = '';
+        }
+
+        /**********************
+         * Init handlers
+         **********************/
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('cashier-content').style.display = 'none';
+            
+            document.getElementById('password-input-delete').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    executeClearData();
+                }
+            });
+            document.getElementById('password-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+            document.getElementById('total-amount').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    promptEndPeriod();
+                }
+            });
+
+            // apply backup current state (if any) to inputs when UI built
+            try{
+              const bk = localStorage.getItem('currentStateBackup');
+              if(bk){
+                const parsed = JSON.parse(bk);
+                if(parsed && parsed.items){
+                  // if UI built later, apply after small delay
+                  setTimeout(()=> applyRemoteState(parsed), 600);
+                }
+              }
+            }catch(e){}
+
+        });
+    </script>
 </body>
 </html>
