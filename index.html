@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
@@ -14,13 +14,13 @@
        Theme variables (Modern Dark by default)
        ------------------------------------------ */
     :root{
-      --main-theme-color: #06b6d4; /* teal */
-      --accent-color: #7c3aed;    /* violet accent */
-      --text-dark: #e6eef8;       /* light text */
+      --main-theme-color: #06b6d4;
+      --accent-color: #7c3aed;
+      --text-dark: #e6eef8;
       --text-header: #e6eef8;
-      --background-light: #0b1220; /* dark page bg */
-      --danger-color: #ef4444;     /* red */
-      --safe-color: #34d399;       /* green */
+      --background-light: #0b1220;
+      --danger-color: #ef4444;
+      --safe-color: #34d399;
       --shadow-color: rgba(2,6,23,0.6);
       --font-family: 'Poppins', sans-serif;
       --border-color: rgba(255,255,255,0.04);
@@ -30,11 +30,10 @@
       --transition: 0.22s ease;
     }
 
-    /* Light theme override (applied when body.light exists) */
     body.light {
-      --main-theme-color: #FF8A65;   /* warm orange (original look) */
+      --main-theme-color: #FF8A65;
       --accent-color: #FFA726;
-      --text-dark: #13293b; /* dark text */
+      --text-dark: #13293b;
       --text-header: #1f2937;
       --background-light: #f8f5f0;
       --danger-color: #ef4444;
@@ -45,9 +44,6 @@
       --border-color: rgba(15,23,42,0.06);
     }
 
-    /* ------------------------------------------
-       Base layout & typography
-       ------------------------------------------ */
     *{box-sizing:border-box}
     html,body{height:100%; margin:0; padding:0; font-family:var(--font-family); -webkit-font-smoothing:antialiased;}
     body{
@@ -63,13 +59,11 @@
 
     h1,h2,h3{margin:0; font-weight:700; color:var(--text-header);}
 
-    /* ------------------------------------------
-       Theme toggle (top-left small icon)
-       ------------------------------------------ */
+    /* Theme toggle (top-left small icon) */
     #theme-toggle {
       position: fixed;
       top: 14px;
-      left: 14px; /* user wanted top-left */
+      left: 14px;
       z-index: 9999;
       width:44px; height:44px;
       border-radius:999px;
@@ -84,9 +78,7 @@
     }
     #theme-toggle:hover { transform: scale(1.06); }
 
-    /* ------------------------------------------
-       Login screen
-       ------------------------------------------ */
+    /* Login screen */
     #login-screen {
       display:flex; justify-content:center; align-items:center;
       position: fixed; inset:0;
@@ -112,9 +104,7 @@
     }
     .login-box button:active { transform: translateY(1px); }
 
-    /* ------------------------------------------
-       Main app layout (keep original structure)
-       ------------------------------------------ */
+    /* Main app layout (keep original structure) */
     #cashier-content { display:none; }
     .header-section { margin-top:8px; text-align:center; }
     .header-section h1 { font-size:20px; padding:18px 0; border-bottom:2px solid rgba(255,255,255,0.03); }
@@ -159,9 +149,6 @@
       text-align:center; font-weight:800; font-size:1rem; background:transparent; color:var(--text-dark);
     }
 
-    /* ------------------------------------------
-       Control panel & buttons
-       ------------------------------------------ */
     .control-panel{
       margin-top:18px; background:var(--card-bg); padding:18px; border-radius:12px;
       box-shadow: 0 12px 30px var(--shadow-color); border:1px solid var(--border-color);
@@ -186,18 +173,15 @@
 
     #clear-data-btn{ background:transparent; color:var(--danger-color); border:1px solid rgba(255,255,255,0.04); padding:10px 14px; border-radius:8px; display:none; }
 
-    /* Past periods & report */
     #past-periods, #final-report-container{
       margin-top:20px; padding:16px; border-radius:10px; background:var(--card-bg); border:1px solid var(--border-color);
       box-shadow: 0 10px 26px var(--shadow-color);
     }
     .period-log{ padding:12px; border-radius:8px; background: rgba(255,255,255,0.02); margin-bottom:12px; border:1px solid var(--border-color); }
 
-    /* modal */
     #password-modal{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:999; }
     .modal-content{ background:var(--card-bg); color:var(--text-dark); padding:20px; border-radius:10px; width:90%; max-width:420px; border:1px solid var(--border-color); }
 
-    /* responsiveness */
     @media (max-width: 900px){
       .items-grid { grid-auto-columns: minmax(220px,1fr); grid-template-rows: repeat(20, minmax(52px,1fr)); }
       .item-name { max-width:140px; font-size:0.95rem; }
@@ -215,9 +199,7 @@
   <!-- Theme toggle (icon only) -->
   <button id="theme-toggle" title="تبديل الثيم">🌙</button>
 
-  <!-- ============================================
-       ORIGINAL APP HTML (kept structure & IDs)
-       ============================================ -->
+  <!-- ORIGINAL APP HTML (kept structure & IDs) -->
   <div id="login-screen">
     <div class="login-box">
       <h2>تسجيل الدخول</h2>
@@ -234,9 +216,7 @@
       <h1>برنامج تسجيل الأصناف</h1>
     </div>
 
-    <div id="item-inputs-container">
-      <!-- grid will be generated here -->
-    </div>
+    <div id="item-inputs-container"></div>
 
     <div class="control-panel">
       <div class="summary-row">
@@ -280,10 +260,28 @@
     </div>
   </div>
 
-  <!-- ============================================
-       ORIGINAL APP SCRIPT (logic preserved)
-       ============================================ -->
+  <!-- Firebase (compat) SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <!-- ORIGINAL APP SCRIPT (logic preserved) + Firebase integration -->
   <script>
+    /***** Firebase config (from you) *****/
+    const firebaseConfig = {
+      apiKey: "AIzaSyB3k-ETF91TYj-apZynpUOU0D_--aRftSQ",
+      authDomain: "cashier-system-18a2f.firebaseapp.com",
+      databaseURL: "https://cashier-system-18a2f-default-rtdb.firebaseio.com",
+      projectId: "cashier-system-18a2f",
+      storageBucket: "cashier-system-18a2f.firebasestorage.app",
+      messagingSenderId: "50951955741",
+      appId: "1:50951955741:web:abb17d413ac812700c2df4",
+      measurementId: "G-Z21M1743KV"
+    };
+    // init firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const PERIODS_REF = db.ref('cashierPeriods');
+
     /**********************
      * حسابات المستخدمين وكلمات السر
      **********************/
@@ -323,7 +321,6 @@
      **********************/
     function populateUsernameSelect(){
       const sel = document.getElementById('username-select');
-      // remove old options except first placeholder
       Array.from(sel.options).forEach((opt, i) => { if(i>0) opt.remove(); });
       for(const u in USER_ACCOUNTS){
         const o = document.createElement('option');
@@ -336,10 +333,7 @@
     function login(){
       const enteredUsername = document.getElementById('username-select').value;
       const enteredPassword = document.getElementById('password-input').value;
-      if(!enteredUsername){
-        alert("الرجاء اختيار اسم المستخدم.");
-        return;
-      }
+      if(!enteredUsername){ alert("الرجاء اختيار اسم المستخدم."); return; }
       const user = USER_ACCOUNTS[enteredUsername];
       if(user && enteredPassword === user.password){
         currentUser = { name: enteredUsername, role: user.role };
@@ -362,7 +356,6 @@
       document.getElementById('username-select').value = '';
       document.getElementById('password-input').value = '';
       document.getElementById('final-report-container').style.display = 'none';
-      // reset inputs
       document.querySelectorAll('.quantity-input').forEach(i => i.value = 0);
       document.getElementById('total-amount').value = '';
       updateSummary();
@@ -391,6 +384,8 @@
       if(entered === DELETION_PASSWORD){
         localStorage.removeItem('cashierPeriods');
         pastPeriods = [];
+        // push to firebase empty
+        PERIODS_REF.set([]).catch(()=>{});
         document.getElementById('final-report-container').style.display = 'none';
         displayPastPeriods();
         alert("تم حذف السجل بالكامل بنجاح. يمكنك الآن تسجيل وردية/يوم جديد.");
@@ -485,7 +480,7 @@
         user: currentUser ? currentUser.name : 'غير معروف'
       };
       pastPeriods.push(periodLog);
-      saveData();
+      saveData();              // saves locally + pushes to Firebase
       displayPastPeriods();
       document.getElementById('total-amount').value = '';
       getAllItemNames().map(i=>i.name).forEach(it => {
@@ -576,18 +571,48 @@
       document.getElementById('password-input-delete').focus();
     }
 
+    /* ---------------------------
+       saveData() & loadData() with Firebase + localStorage
+       --------------------------- */
     function saveData(){
-      localStorage.setItem('cashierPeriods', JSON.stringify(pastPeriods));
+      // save locally
+      try{ localStorage.setItem('cashierPeriods', JSON.stringify(pastPeriods)); } catch(e){ console.warn('localStorage save failed', e); }
+
+      // save to Firebase (periods)
+      PERIODS_REF.set(pastPeriods)
+        .then(()=> console.log('Saved periods to Firebase'))
+        .catch(e => console.warn('Firebase save error', e));
     }
 
     function loadData(){
-      const s = localStorage.getItem('cashierPeriods');
-      if(s){
-        try{ pastPeriods = JSON.parse(s); } catch(e){ pastPeriods = []; }
-        displayPastPeriods();
-      }
-      updateSummary();
-      if(document.getElementById('cashier-content').style.display === 'block') updatePermissionsUI();
+      // 1) try load from Firebase first
+      PERIODS_REF.get().then(snapshot => {
+        if(snapshot && snapshot.exists()){
+          pastPeriods = snapshot.val() || [];
+          displayPastPeriods();
+          updateSummary();
+          console.log('Loaded periods from Firebase');
+        } else {
+          // fallback to localStorage
+          const s = localStorage.getItem('cashierPeriods');
+          if(s){ try{ pastPeriods = JSON.parse(s); } catch(e){ pastPeriods = []; } displayPastPeriods(); updateSummary(); }
+        }
+      }).catch(err => {
+        console.warn('Error reading Firebase, falling back to localStorage', err);
+        const s = localStorage.getItem('cashierPeriods');
+        if(s){ try{ pastPeriods = JSON.parse(s); } catch(e){ pastPeriods = []; } displayPastPeriods(); updateSummary(); }
+      });
+
+      // 2) realtime listener: update UI whenever firebase data changes
+      PERIODS_REF.on('value', snap => {
+        const val = snap.val();
+        if(val){
+          pastPeriods = val;
+          displayPastPeriods();
+          updateSummary();
+          console.log('Realtime update from Firebase applied');
+        }
+      });
     }
 
     /**********************
@@ -606,7 +631,14 @@
       document.getElementById('total-amount').addEventListener('keypress', e => {
         if(e.key === 'Enter') promptEndPeriod();
       });
-      // load stored periods into pastPeriods
+
+      // init theme (dark default)
+      (function(){
+        const saved = localStorage.getItem('cs_theme_dark');
+        if(saved === '0') setTheme(false); else setTheme(true);
+      })();
+
+      // load periods from firebase/local
       loadData();
     });
 
@@ -627,11 +659,6 @@
       isDark = dark;
     }
     themeToggle.addEventListener('click', () => setTheme(!isDark));
-    // initialize theme from storage (dark default)
-    (function(){
-      const saved = localStorage.getItem('cs_theme_dark');
-      if(saved === '0') setTheme(false); else setTheme(true);
-    })();
 
   </script>
 </body>
