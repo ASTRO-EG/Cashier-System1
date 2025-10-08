@@ -600,18 +600,14 @@
 
         // init firebase
         firebase.initializeApp(firebaseConfig);
+console.log("Firebase connected:", firebase.apps.length > 0);
+if (!firebase.apps.length) alert("⚠️ لم يتم الاتصال بـ Firebase بنجاح!");
         const db = firebase.database();
         const PERIODS_REF = db.ref('cashierPeriods');
         const CURRENT_STATE_REF = db.ref('currentState');
 
         // Activate App Check (reCAPTCHA Enterprise) - استخدم المفتاح الذي أنشأته
-        try {
-          const appCheck = firebase.appCheck();
-          appCheck.activate('6Lfau-ErAAAAABSABhgaE7BF0TtdMsWxv4lPehW4', true);
-          console.log('App Check activated');
-        } catch (e) {
-          console.warn('App Check activation failed:', e);
-        }
+        console.log("App Check skipped for testing.");
 
         // **********************************************
         // ----------------- تعريف الأصناف -----------------
