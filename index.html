@@ -1,1112 +1,560 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سجل الكاشير - واجهة الأصناف</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&display=swap" rel="stylesheet">
-    
-    <link rel="icon" href="https://i.ibb.co/FWSY5QY/rose-removebg.png"> 
-    <link rel="apple-touch-icon" href="https://i.ibb.co/FWSY5QY/rose-removebg.png"> 
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>🍔 AppCashier</title>
+
+<!-- favicon: 🍔 (SVG data URL) -->
+<link id="faviconLink" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%23FFB74D'/%3E%3Ctext x='50' y='62' font-size='46' text-anchor='middle' font-family='Arial,sans-serif'%3E%F0%9F%8D%94%3C/text%3E%3C/svg%3E">
 
 <style>
-        /* ------------------------------------------------ */
-        /* متغيرات الألوان الجديدة */
-        /* ------------------------------------------------ */
-        :root {
-            --main-theme-color: #FF8A65; /* برتقالي مرجاني */
-            --accent-color: #FFA726; /* برتقالي ساطع */
-            --text-dark: #4E342E; /* بني داكن */
-            --text-header: #5D4037; /* بني العناوين */
-            --background-light: #FFF3E0; /* بيج فاتح */
-            --danger-color: #EF5350; /* أحمر للخطر */
-            --safe-color: #66BB6A; /* أخضر للأمان */
-            --shadow-color: rgba(78, 52, 46, 0.2);
-            --font-family: 'Tajawal', sans-serif;
-        }
-
-        /* ------------------------------------------------ */
-        /* تنسيقات عامة */
-        /* ------------------------------------------------ */
-        body {
-            font-family: var(--font-family);
-            background: linear-gradient(135deg, #f8f5f0, var(--background-light));
-            color: var(--text-dark);
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            direction: rtl; 
-            text-align: right;
-            min-height: 100vh;
-            overflow-y: auto; 
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-
-        h1, h2, h3 {
-            color: var(--text-header);
-            font-weight: 800;
-            text-align: center;
-        }
-
-        h1 {
-            border-bottom: 3px solid var(--main-theme-color);
-            padding-bottom: 10px;
-            margin-bottom: 30px;
-        }
-
-        /* ------------------------------------------------ */
-        /* تنسيقات شاشة الدخول */
-        /* ------------------------------------------------ */
-        #login-screen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: linear-gradient(135deg, var(--main-theme-color) 0%, var(--accent-color) 100%);
-            z-index: 1000;
-        }
-        
-        .login-box {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px var(--shadow-color);
-            text-align: center;
-            width: 350px;
-        }
-
-        .login-box h2 {
-            margin-top: 0;
-            color: var(--main-theme-color);
-            font-size: 2em;
-        }
-
-        .login-box select,
-        .login-box input[type="text"],
-        .login-box input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .login-box input:focus,
-        .login-box select:focus {
-            border-color: var(--accent-color);
-            outline: none;
-        }
-
-        .login-box button {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--main-theme-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: 700;
-            transition: background-color 0.3s, transform 0.1s;
-        }
-
-        .login-box button:hover {
-            background-color: #E67A5A;
-        }
-        .login-box button:active {
-            transform: scale(0.98);
-        }
-
-        /* ------------------------------------------------ */
-        /* تنسيقات المحتوى الرئيسي (الكاشير) */
-        /* ------------------------------------------------ */
-        #cashier-content {
-            display: none;
-            padding: 20px 0;
-        }
-        
-        /* ------------------------------------------------ */
-        /* تنسيقات الأصناف والكميات (لـ Desktop) */
-        /* ------------------------------------------------ */
-        #item-inputs-container {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px var(--shadow-color);
-            overflow-x: auto; 
-            overflow-y: hidden; 
-        }
-        
-        .items-grid {
-            display: grid;
-            grid-template-rows: repeat(15, minmax(65px, 1fr)); 
-            grid-auto-columns: minmax(320px, 1fr); 
-            gap: 15px;
-            padding: 10px;
-            grid-auto-flow: column; 
-        }
-
-        .item-box {
-            background-color: #fff;
-            border: 2px solid var(--main-theme-color);
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 5px var(--shadow-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-            cursor: default; 
-        }
-        
-        .item-name-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .item-name {
-            font-weight: 900; 
-            font-size: 1.05em; 
-            color: var(--text-header); 
-            line-height: 1.3;
-            flex-grow: 1;
-        }
-        
-        .item-number {
-            font-size: 1em; 
-            font-weight: 900; 
-            color: var(--accent-color);
-            background-color: rgba(255, 253, 250, 0.95);
-            padding: 4px 8px;
-            border-radius: 6px;
-            min-width: 30px;
-            text-align: center;
-            border: 1px solid var(--accent-color);
-        }
-        
-        /* حقل الإدخال الجديد */
-        .quantity-input {
-            width: 60px;
-            padding: 8px;
-            text-align: center;
-            border: 2px solid var(--safe-color);
-            border-radius: 6px;
-            font-weight: 700;
-            color: var(--danger-color);
-            background-color: #E8F5E9; 
-            font-size: 1em;
-        }
-
-        /* ------------------------------------------------ */
-        /* **تعديلات لوحات التحكم والأزرار** */
-        /* ------------------------------------------------ */
-        
-        #amount-input-panel, .control-panel {
-            background-color: #ffffff; 
-            padding: 25px;
-            border-radius: 15px;
-            margin-top: 30px;
-            box-shadow: 0 10px 30px rgba(78, 52, 46, 0.15); 
-            border: 1px solid #E0E0E0;
-        }
-        
-        #amount-input-panel h2, .control-panel h2 {
-            font-weight: 900 !important; 
-            color: var(--main-theme-color); 
-            text-align: right !important;
-            border-bottom: 3px solid var(--accent-color) !important;
-            padding-bottom: 8px !important;
-            margin-top: 0 !important;
-            margin-bottom: 25px !important;
-        }
-        
-        .control-flex {
-            display: flex; 
-            align-items: flex-end; 
-            gap: 20px;
-            font-weight: 800; 
-            font-size: 1.1em;
-        }
-        
-        .control-flex > div {
-            flex: 1;
-        }
-        
-        #amount-input-panel label {
-            font-weight: 800 !important;
-            color: var(--text-header) !important;
-            font-size: 1.1em !important;
-        }
-
-        #total-amount {
-            width: 100%;
-            padding: 15px;
-            border: 3px solid var(--main-theme-color); 
-            border-radius: 10px;
-            box-sizing: border-box;
-            font-size: 1.2em;
-            font-weight: 900; 
-            color: var(--text-header);
-            background-color: var(--background-light); 
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s;
-        }
-        #total-amount:focus {
-            border-color: var(--safe-color);
-            box-shadow: 0 0 0 4px rgba(102, 187, 106, 0.3); 
-            background-color: #fff;
-            outline: none;
-        }
-
-        .summary-box {
-            background-color: var(--safe-color) !important; 
-            color: white !important; 
-            padding: 15px 20px !important;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            font-weight: 800 !important; 
-            flex-grow: 0 !important; 
-            min-width: 150px !important; 
-        }
-        
-        #total-orders-count {
-            display: block;
-            font-size: 2.2em;
-            font-weight: 900 !important; 
-            margin-top: 5px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); 
-        }
-        
-        .control-flex button, .report-btns button {
-            padding: 15px 20px !important;
-            border-radius: 10px !important;
-            font-size: 1.1em !important;
-            font-weight: 800 !important; 
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-            transition: all 0.2s;
-            border: none;
-            cursor: pointer;
-            width: 100%; 
-        }
-        .control-flex button:hover, .report-btns button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-        }
-        
-        .end-period-btn {
-            background-color: var(--accent-color) !important;
-            color: white !important;
-        }
-        .report-btns button:first-child {
-            background-color: var(--main-theme-color);
-            color: white;
-        }
-        .report-btns button:last-child {
-            background-color: var(--danger-color) !important;
-        }
-        
-        #final-report-container table { 
-            width: 100%; 
-            border-collapse: collapse;
-            margin-top: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        #final-report-container th, #final-report-container td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: right;
-            font-weight: 700; 
-        }
-        #final-report-container th { 
-            background-color: var(--main-theme-color); 
-            color: white; 
-            font-weight: 900;
-        }
-        .report-total-row { 
-            background-color: var(--background-light); 
-            font-weight: 900; 
-            font-size: 1.1em; 
-            color: var(--danger-color);
-        }
-
-        /* ------------------------------------------------ */
-        /* تنسيقات المودال (نافذة كلمة السر للحذف) */
-        /* ------------------------------------------------ */
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background: linear-gradient(135deg, var(--main-theme-color) 0%, var(--accent-color) 100%);
-            justify-content: center;
-            align-items: center;
-            display: flex; 
-        }
-
-        .modal-content {
-            background-color: #ffffff;
-            padding: 40px; 
-            border: none; 
-            width: 90%;
-            max-width: 400px; 
-            border-radius: 15px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-        
-        .modal-content h3 {
-            color: var(--danger-color);
-            font-size: 1.8em;
-            margin-bottom: 10px;
-            font-weight: 900; 
-        }
-
-        .modal-content p {
-            font-size: 1.1em;
-            font-weight: 700; 
-            color: var(--text-dark);
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 12px;
-            margin: 15px 0;
-            border: 2px solid var(--danger-color);
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 18px; 
-            text-align: center;
-            font-weight: 900; 
-        }
-
-        .modal-content .modal-btns {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .modal-content .confirm-btn {
-            background-color: var(--danger-color);
-            color: white;
-        }
-        .modal-content .confirm-btn:hover {
-            background-color: #C62828;
-        }
-        
-        .modal-content .cancel-btn {
-            background-color: #eee;
-            color: var(--text-dark);
-        }
-        .modal-content .cancel-btn:hover {
-            background-color: #ddd;
-        }
-
-        .modal-content .modal-btns button {
-            flex-grow: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 800; 
-            font-size: 1.1em;
-            transition: background-color 0.2s;
-        }
-
-        .logout-btn {
-            background-color: #6c757d !important;
-            color: white !important;
-            margin-top: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                margin: 10px auto;
-            }
-            .items-grid {
-                grid-template-columns: repeat(3, 1fr);
-                grid-template-rows: repeat(19, minmax(50px, 1fr)); 
-                grid-auto-flow: column; 
-                
-                grid-auto-columns: auto;
-                max-height: none;
-                gap: 8px; 
-            }
-            .item-box {
-                padding: 6px; 
-            }
-            .item-name {
-                font-size: 0.9em; 
-                font-weight: 700;
-            }
-            .item-number {
-                font-size: 0.85em; 
-                padding: 2px 4px; 
-            }
-            .quantity-input {
-                width: 45px; 
-                padding: 4px; 
-                font-size: 0.9em; 
-            }
-
-            .control-flex {
-                flex-direction: column;
-                gap: 15px;
-                align-items: stretch; 
-            }
-            .control-flex > div {
-                min-width: 100%;
-            }
-            .report-btns {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <div id="login-screen">
-        <div class="login-box">
-            <h2>تسجيل الدخول</h2>
-            <div class="input-group">
-                <select id="user-select">
-                    <option value="admin">مدير النظام (Admin)</option>
-                    <option value="محمد">محمد</option>
-                    <option value="احمد">احمد</option>
-                    <option value="محمود">محمود</option>
-                    <option value="سيد">سيد</option>
-                    <option value="على">على</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <input type="password" id="password-input" placeholder="كلمة المرور">
-            </div>
-            <button onclick="login()">دخول</button>
-        </div>
-    </div>
-
-    <div id="cashier-content" class="container">
-        <h1>برنامج تسجيل الأصناف - <span id="current-user-display"></span></h1>
-
-        <div id="item-inputs-container">
-            </div>
-
-        <div id="amount-input-panel">
-            <h2>
-                تسجيل إجمالي الفترة الحالية
-            </h2>
-            <div class="control-flex">
-                <div>
-                    <label for="total-amount">
-                        المبلغ الإجمالي المسجل من الماكينة:
-                    </label>
-                    <input type="number" id="total-amount" placeholder="أدخل مبلغ الإجمالي هنا" min="0">
-                </div>
-                
-                <div class="summary-box">
-                    <p>إجمالي عدد الوحدات:</p>
-                    <span id="total-orders-count">0</span>
-                </div>
-                
-                <div>
-                    <button class="end-period-btn" onclick="promptEndPeriod()">
-                        إنهاء الفترة وتسجيل المبلغ
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="control-panel">
-            <h2>خيارات السجل والتقارير</h2>
-            <div class="report-btns">
-                <button onclick="promptDailyReport()"><i class="fas fa-file-invoice"></i> إعداد وعرض تقرير المبيعات التفصيلي</button>
-                <button id="delete-btn" onclick="clearAllData()" style="display: none;"><i class="fas fa-trash"></i> حذف السجل بالكامل (وردية جديدة)</button>
-                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
-            </div>
-        </div>
-
-        <div id="final-report-container" style="display: none;">
-            <h2>تقرير مبيعات الفترة/اليوم الكلي</h2>
-            <p><strong>تاريخ التقرير:</strong> <span id="report-date"></span></p>
-            <div id="detailed-sales-summary">
-                </div>
-        </div>
-
-        <div id="past-periods">
-            <h2>سجل الفترات السابقة</h2>
-            </div>
-
-    </div>
-    
-    <div id="password-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h3>تأكيد عملية الحذف</h3>
-            <p>الرجاء إدخال كلمة سر المدير لحذف السجل بالكامل:</p>
-            <input type="password" id="password-input-delete" placeholder="كلمة السر">
-            <div class="modal-btns">
-                <button class="confirm-btn" onclick="executeClearData()">تأكيد الحذف</button>
-                <button class="cancel-btn" onclick="closeModal()">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-  <!-- Firebase compat SDKs (app + database + app-check) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-check-compat.js"></script>
-
-    <script>
-        // **********************************************
-        // ----------------- دوال الأمان (كلمات السر) -----------------
-        // **********************************************
-        const LOGIN_PASSWORD = "1010"; 
-        const CASHIER_PASSWORD = "5050"; 
-        const DELETION_PASSWORD = "111975"; 
-
-        let currentUser = "";
-
-        // **********************************************
-        // ------------- Firebase configuration -----------
-        // **********************************************
-        const firebaseConfig = {
-          apiKey: "AIzaSyB3k-ETF91TYj-apZynpUOU0D_--aRftSQ",
-          authDomain: "cashier-system-18a2f.firebaseapp.com",
-          databaseURL: "https://cashier-system-18a2f-default-rtdb.firebaseio.com",
-          projectId: "cashier-system-18a2f",
-          storageBucket: "cashier-system-18a2f.firebasestorage.app",
-          messagingSenderId: "50951955741",
-          appId: "1:50951955741:web:abb17d413ac812700c2df4",
-          measurementId: "G-Z21M1743KV"
-        };
-
-        // init firebase
-        firebase.initializeApp(firebaseConfig);
-console.log("Firebase connected:", firebase.apps.length > 0);
-if (!firebase.apps.length) alert("⚠️ لم يتم الاتصال بـ Firebase بنجاح!");
-        const db = firebase.database();
-        const PERIODS_REF = db.ref('cashierPeriods');
-        const CURRENT_STATE_REF = db.ref('currentState');
-
-        // Activate App Check (reCAPTCHA Enterprise) - استخدم المفتاح الذي أنشأته
-        console.log("App Check skipped for testing.");
-
-        // **********************************************
-        // ----------------- تعريف الأصناف -----------------
-        // **********************************************
-        const ALL_ITEMS_IN_ORDER = [
-            "شاورمه كيذر", "شاورمه شامي", "شاورمه فينا", "شاورمه طبق",
-            "مكرونه", "كبيبه", "ورق عنب", "سلطه خضراء", "طماطم مخلل", "باذنجان مخلل", "شيبسي", "بابا غنوج", "طرشي",
-            "كفته ص","سجق ص","كبده ص","مخ ص","روزبيف ص","جبنه رومي","فراخ بانيه ص","بيف برجر","سوسيس ",
-            "كفته شامي","سجق شامي","كبده شامي","مخ شامي","روزبيف شامي","سوسيس شامي","فراخ شامي",
-            "كفته فينا","سجق فينا","كبده فينا","مخ فينا","روزبيف فينا","سوسيس فينا","فراخ فينا",
-            "جبنه رومي فينا",
-            " مانجو"," فراوله"," رمان"," برتقال","عنب"," جوافه"," موز"," كانتالوب","كوكتيل ",
-            "كولا","سبرايت","فانتا","دايت ","مياه معدنيه",
-            "ليمون","بطيخ","كانز ص","كانز ك"
-        ];
-
-        let pastPeriods = [];
-        let suppressLocalUpdate = false; // لتجنب حلقات التحديث عند الكتابة إلى Firebase
-        let lastPublishAt = 0;
-
-        /**********************
-         * Helpers
-         **********************/
-        function idFromName(n){ return 'input-' + n.replace(/\s|\/|\(|\)|[^a-zA-Z0-9\u0600-\u06FF]/g,'_'); }
-
-        function getAllItemNames() {
-            const names = [];
-            let itemCounter = 1;
-            ALL_ITEMS_IN_ORDER.forEach(item => { names.push({ name: item, number: itemCounter++ }); });
-            return names;
-        }
-
-        /**********************
-         * UI builders
-         **********************/
-        function createItemInputs() {
-            const container = document.getElementById('item-inputs-container');
-            if(container.querySelector('.items-grid')) {
-                 // already created
-                 return;
-            }
-
-            const allItems = getAllItemNames();
-            const gridDiv = document.createElement('div');
-            gridDiv.className = 'items-grid';
-            container.appendChild(gridDiv);
-
-            allItems.forEach(itemData => {
-                const item = itemData.name;
-                const itemNumber = itemData.number;
-                const safeId = idFromName(item);
-
-                const itemBox = document.createElement('div');
-                itemBox.className = 'item-box';
-
-                itemBox.innerHTML = `
-                    <div class="item-name-group">
-                        <span class="item-number">${itemNumber}</span>
-                        <span class="item-name">${item}</span>
-                    </div>
-                    <input type="number" id="${safeId}" class="quantity-input" value="0" min="0"
-                           oninput="onQuantityChange(event, '${item}')"
-                           onclick="this.select()">
-                `;
-
-                gridDiv.appendChild(itemBox);
-            });
-        }
-
-        /**********************
-         * Quantity change -> publish local & remote
-         **********************/
-        function onQuantityChange(e, itemName){
-          // called on input event
-          if (suppressLocalUpdate) return; // ignore updates that came from remote
-          // read values into currentState object
-          const all = getAllItemNames().map(i=>i.name);
-          const state = {};
-          all.forEach(it=>{
-            const el = document.getElementById(idFromName(it));
-            if(el) state[it] = Math.max(0, Math.floor(Number(el.value) || 0));
-          });
-          // publish debounced
-          publishCurrentState(state);
-          updateSummary(); // update totals immediately
-        }
-
-        // debounce publisher
-        let publishTimeout = null;
-        function publishCurrentState(state){
-          // throttle: don't publish more often than once per 800ms
-          if(publishTimeout) clearTimeout(publishTimeout);
-          publishTimeout = setTimeout(()=>{
-            lastPublishAt = Date.now();
-            try {
-              // mark that this write came from client so we can ignore immediate incoming callback
-              suppressLocalUpdate = true;
-              CURRENT_STATE_REF.set({
-                items: state,
-                lastUpdatedAt: Date.now(),
-                lastUpdatedBy: currentUser || 'guest'
-              }).catch(()=>{});
-              // after small delay allow local updates again
-              setTimeout(()=> { suppressLocalUpdate = false; }, 600);
-              // also save local backup
-              try{ localStorage.setItem('currentStateBackup', JSON.stringify({items: state, ts: Date.now()})); }catch(e){}
-            } catch(e) {
-              console.warn('publish error', e);
-              suppressLocalUpdate = false;
-            }
-          }, 250);
-        }
-
-        /**********************
-         * Apply remote state to inputs
-         **********************/
-        function applyRemoteState(remote){
-          if(!remote || !remote.items) return;
-          // set inputs but avoid changing focused input (to not interrupt user typing)
-          Object.keys(remote.items).forEach(item => {
-            const el = document.getElementById(idFromName(item));
-            if(!el) return;
-            // don't overwrite if the user is currently focused on this input
-            if(document.activeElement === el) return;
-            // update value
-            el.value = Math.max(0, Math.floor(Number(remote.items[item] || 0)));
-          });
-          updateSummary();
-        }
-
-        /**********************
-         * saveData / loadData for periods (local + remote)
-         **********************/
-        function saveData(){
-          // save locally
-          try{ localStorage.setItem('cashierPeriods', JSON.stringify(pastPeriods)); }catch(e){}
-
-          // save to firebase
-          PERIODS_REF.set(pastPeriods).catch(e => console.warn('periods save error', e));
-        }
-
-        function loadData(){
-          // try to read periods from firebase first
-          PERIODS_REF.once('value').then(snapshot=>{
-            if(snapshot && snapshot.exists()){
-              pastPeriods = snapshot.val() || [];
-              displayPastPeriods();
-              updateSummary();
-              console.log('Loaded periods from Firebase');
-            } else {
-              // fallback to local
-              const s = localStorage.getItem('cashierPeriods');
-              if(s){ try{ pastPeriods = JSON.parse(s); } catch(e){ pastPeriods = []; } displayPastPeriods(); updateSummary(); }
-            }
-          }).catch(err=>{
-            console.warn('Firebase read failed, fallback to local', err);
-            const s = localStorage.getItem('cashierPeriods');
-            if(s){ try{ pastPeriods = JSON.parse(s); } catch(e){ pastPeriods = []; } displayPastPeriods(); updateSummary(); }
-          });
-
-          // realtime listener for periods updates (so all clients see same pastPeriods)
-          PERIODS_REF.on('value', snap=>{
-            const val = snap.val();
-            if(val){
-              pastPeriods = val;
-              displayPastPeriods();
-              updateSummary();
-              console.log('Realtime periods update applied');
-            }
-          });
-
-          // realtime listener for current state
-          CURRENT_STATE_REF.on('value', snap=>{
-            const val = snap.val();
-            if(val && val.items){
-              // apply remote but avoid clobbering user typing
-              if (!suppressLocalUpdate) {
-                applyRemoteState(val);
-                console.log('Applied remote currentState update');
-              }
-            } else {
-              // if no remote state, try local backup
-              const bk = localStorage.getItem('currentStateBackup');
-              if(bk){
-                try{
-                  const parsed = JSON.parse(bk);
-                  if(parsed && parsed.items) applyRemoteState(parsed);
-                }catch(e){}
-              }
-            }
-          });
-        }
-
-        /**********************
-         * Rest of your original functions (little adjustments)
-         **********************/
-        function updateSummary() {
-            let totalCount = 0;
-            const allItems = getAllItemNames().map(i => i.name);
-            
-            allItems.forEach(item => {
-                const safeId = idFromName(item);
-                const inputElement = document.getElementById(safeId);
-                
-                if (inputElement) {
-                    const quantity = parseInt(inputElement.value) || 0;
-                    if (quantity > 0) {
-                        totalCount += quantity; 
-                    }
-                }
-            });
-            
-            const totalOrdersEl = document.getElementById('total-orders-count');
-            if(totalOrdersEl) totalOrdersEl.textContent = totalCount;
-        }
-
-        function getCurrentItemsLog() {
-            const itemsLog = {};
-            const allItems = getAllItemNames().map(i => i.name);
-
-            allItems.forEach(item => {
-                const safeId = idFromName(item);
-                const inputElement = document.getElementById(safeId);
-                const quantity = parseInt(inputElement ? inputElement.value : 0) || 0; 
-                
-                if (quantity > 0) {
-                    itemsLog[item] = quantity;
-                }
-            });
-            return itemsLog;
-        }
-
-        function promptEndPeriod() {
-            const totalInput = document.getElementById('total-amount');
-            const totalAmount = parseFloat(totalInput.value);
-
-            if (isNaN(totalAmount) || totalAmount <= 0) {
-                alert("الرجاء إدخال المبلغ الإجمالي للفترة من الماكينة.");
-                totalInput.focus();
-                return;
-            }
-            endPeriod(totalAmount);
-        }
-
-        function endPeriod(totalAmount) {
-            const totalOrders = parseInt(document.getElementById('total-orders-count').textContent);
-
-            if (totalOrders === 0) {
-                alert("لا يوجد أصناف مسجلة في هذه الفترة.");
-                return;
-            }
-            
-            const currentItemsLog = getCurrentItemsLog();
-            const periodLog = {
-                id: pastPeriods.length + 1,
-                time: new Date().toLocaleTimeString('ar-EG'),
-                date: new Date().toLocaleDateString('ar-EG'),
-                totalAmount: totalAmount, 
-                totalOrders: totalOrders, 
-                itemsLog: currentItemsLog,
-                user: currentUser // إضافة اسم المستخدم
-            };
-
-            pastPeriods.push(periodLog);
-            saveData(); 
-
-            displayPastPeriods();
-
-            document.getElementById('total-amount').value = ''; 
-            
-            getAllItemNames().map(i => i.name).forEach(item => {
-                const safeId = idFromName(item);
-                const inputElement = document.getElementById(safeId);
-                if (inputElement) inputElement.value = 0;
-            });
-            
-            updateSummary();
-
-            alert(`تم تسجيل المبلغ بنجاح. المبلغ الإجمالي المسجل للفترة هو: ${totalAmount}.`); 
-        }
-
-        function displayPastPeriods() {
-            const container = document.getElementById('past-periods');
-            if(!container) return;
-            container.innerHTML = '<h2>سجل الفترات السابقة</h2>'; 
-
-            const formatItemsLog = (log) => {
-                let html = '<ul>';
-                for (const item in log) {
-                    if (log[item] > 0) {
-                        html += `<li><strong>${item}:</strong> <span style="color: var(--accent-color); font-weight: 800;">${log[item]}</span> قطعة</li>`;
-                    }
-                }
-                html += '</ul>';
-                return html;
-            };
-
-            pastPeriods.slice().reverse().forEach(period => {
-                const fullAmount = period.totalAmount; 
-                
-                const logDiv = document.createElement('div');
-                logDiv.className = 'period-log';
-                logDiv.style.cssText = 'padding: 15px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 15px; background-color: #f9f9f9;';
-                logDiv.innerHTML = `
-                    <h3>فترة رقم ${period.id} - ${period.time} (${period.date})</h3>
-                    <p style="font-weight: 700;"><strong>تم التسجيل بواسطة:</strong> ${period.user}</p>
-                    <p style="font-weight: 700;"><strong>الإجمالي المسجل من الماكينة:</strong> <span style="color: var(--danger-color); font-weight: 900; font-size: 1.2em;">${fullAmount}</span></p> 
-                    <p style="font-weight: 700;"><strong>إجمالي عدد الوحدات/القطع المدخلة:</strong> ${period.totalOrders}</p>
-                    <h4 style="font-weight: 800; margin-top: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">تفاصيل الأصناف:</h4>
-                    ${formatItemsLog(period.itemsLog)}
-                `;
-                container.appendChild(logDiv);
-            });
-        }
-
-        function generateDailySalesReport() {
-            if (pastPeriods.length === 0) {
-                alert("لا يوجد بيانات مسجلة لإنشاء التقرير.");
-                return;
-            }
-
-            const combinedSales = {};
-            let totalMoney = 0;
-            let totalUnits = 0;
-
-            pastPeriods.forEach(period => {
-                totalMoney += period.totalAmount;
-                totalUnits += period.totalOrders;
-                for (const item in period.itemsLog) {
-                    combinedSales[item] = (combinedSales[item] || 0) + period.itemsLog[item];
-                }
-            });
-
-            const orderedItems = getAllItemNames().map(i => i.name); 
-            const sortedItems = orderedItems
-                .map(item => [item, combinedSales[item] || 0])
-                .filter(([, quantity]) => quantity > 0);
-
-            const finalTotalMoney = totalMoney.toFixed(2); 
-            const reportContainer = document.getElementById('final-report-container');
-            const summaryDiv = document.getElementById('detailed-sales-summary');
-
-            document.getElementById('report-date').textContent = new Date().toLocaleDateString('ar-EG');
-
-            let tableHTML = '<table>';
-            tableHTML += '<thead><tr><th>الصنف</th><th>الكمية الكلية المباعة</th></tr></thead>';
-            tableHTML += '<tbody>';
-
-            sortedItems.forEach(([item, quantity]) => {
-                tableHTML += `<tr><td>${item}</td><td>${quantity} قطعة</td></tr>`;
-            });
-
-            tableHTML += `<tr class="report-total-row"><td>الإجمالي الكلي للقطع</td><td>${totalUnits} قطعة</td></tr>`;
-            tableHTML += `<tr class="report-total-row"><td>الإجمالي الكلي للمبلغ</td><td>${finalTotalMoney}</td></tr>`; 
-
-            tableHTML += '</tbody></table>';
-
-            summaryDiv.innerHTML = tableHTML;
-            reportContainer.style.display = 'block'; 
-            if (!reportContainer.querySelector('.print-btn')) {
-                 const printBtn = document.createElement('button');
-                 printBtn.className = 'print-btn end-period-btn';
-                 printBtn.style.marginTop = '20px';
-                 printBtn.style.width = 'auto';
-                 printBtn.textContent = 'طباعة التقرير';
-                 printBtn.setAttribute('onclick', 'window.print()');
-                 reportContainer.appendChild(printBtn);
-            }
-            
-            setTimeout(() => {
-                reportContainer.scrollIntoView({ behavior: 'smooth' });
-            }, 50); 
-            
-            alert("تم عرض تقرير مبيعات اليوم التفصيلي في نهاية الصفحة. يمكنك طباعته أو نسخه الآن.");
-        }
-
-        function promptDailyReport() {
-            if (pastPeriods.length === 0) {
-                alert("لا يوجد فترات مسجلة لإعداد التقرير.");
-                return;
-            }
-            document.getElementById('final-report-container').style.display = 'none';
-            generateDailySalesReport();
-        }
-
-        function clearAllData() {
-            if (!confirm("هل أنت متأكد من حذف السجل بالكامل؟ هذه الخطوة لا يمكن التراجع عنها.")) {
-                return;
-            }
-            document.getElementById('password-modal').style.display = 'flex';
-            document.getElementById('password-input-delete').focus(); 
-        }
-
-        function executeClearData() {
-            const enteredPassword = document.getElementById('password-input-delete').value;
-            closeModal(); 
-
-            if (enteredPassword === DELETION_PASSWORD) {
-                try{ localStorage.removeItem('cashierPeriods'); }catch(e){}
-                pastPeriods = [];
-                // push empty to firebase
-                PERIODS_REF.set([]).catch(()=>{});
-                displayPastPeriods();
-                alert("تم حذف السجل بالكامل بنجاح. يمكنك الآن تسجيل وردية/يوم جديد.");
-            } else {
-                alert("كلمة السر غير صحيحة. تم إلغاء عملية الحذف.");
-            }
-        }
-
-        /**********************
-         * Authentication (unchanged)
-         **********************/
-        function login() {
-            const selectedUser = document.getElementById('user-select').value;
-            const enteredPassword = document.getElementById('password-input').value;
-            
-            let isAuthenticated = false;
-            
-            if (selectedUser === "admin" && enteredPassword === LOGIN_PASSWORD) {
-                isAuthenticated = true;
-            } else if (selectedUser !== "admin" && enteredPassword === CASHIER_PASSWORD) {
-                isAuthenticated = true;
-            }
-            
-            if (isAuthenticated) {
-                currentUser = selectedUser;
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('cashier-content').style.display = 'block';
-                document.getElementById('current-user-display').textContent = currentUser;
-                
-                // إظهار زر الحذف فقط للمدير
-                if (currentUser === "admin") {
-                    document.getElementById('delete-btn').style.display = 'block';
-                } else {
-                    document.getElementById('delete-btn').style.display = 'none';
-                }
-                
-                // build UI
-                createItemInputs();
-                // load data + realtime listeners
-                loadData();
-
-                // try to apply currentState immediate if exists
-                CURRENT_STATE_REF.once('value').then(snap=>{
-                  const v = snap.val();
-                  if(v && v.items) applyRemoteState(v);
-                }).catch(()=>{ /* ignore */ });
-
-            } else {
-                alert("اسم المستخدم أو كلمة المرور غير صحيحة.");
-            }
-        }
-
-        function logout() {
-            currentUser = "";
-            document.getElementById('cashier-content').style.display = 'none';
-            document.getElementById('login-screen').style.display = 'flex';
-            document.getElementById('password-input').value = '';
-        }
-
-        /**********************
-         * Init handlers
-         **********************/
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('cashier-content').style.display = 'none';
-            
-            document.getElementById('password-input-delete').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    executeClearData();
-                }
-            });
-            document.getElementById('password-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    login();
-                }
-            });
-            document.getElementById('total-amount').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    promptEndPeriod();
-                }
-            });
-
-            // apply backup current state (if any) to inputs when UI built
-            try{
-              const bk = localStorage.getItem('currentStateBackup');
-              if(bk){
-                const parsed = JSON.parse(bk);
-                if(parsed && parsed.items){
-                  // if UI built later, apply after small delay
-                  setTimeout(()=> applyRemoteState(parsed), 600);
-                }
-              }
-            }catch(e){}
-
-        });
-    
-function closeModal() {
-    document.getElementById('password-modal').style.display = 'none';
+/* ================== AppCashier — Single HTML (Mobile-first Portrait) ================== */
+/* Base */
+:root{--transition:180ms}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0;font-family:"IBM Plex Sans Arabic",system-ui,Roboto,Arial;direction:rtl;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body[data-theme]{transition:background var(--transition),color var(--transition)}
+
+/* Default theme variables (kept as before) */
+[data-theme]{
+  --bg: linear-gradient(180deg,#071014,#071219);
+  --panel-bg: rgba(8,18,20,0.85);
+  --accent:#00BCD4; --accent-2:#26c6da;
+  --text:#E6F7F8; --muted:rgba(255,255,255,0.03);
+  --card-border: rgba(255,255,255,0.04);
+  --shadow: rgba(0,0,0,0.5);
+  /* contrast overrides (we will set per-theme) */
+  --input-text: var(--text);
+  --text-contrast: var(--text);
+  /* تحسين التباين للأصناف */
+  --item-text: #FFFFFF;
+  /* danger variable for amounts/buttons */
+  --danger: #ff5252;
 }
+
+/* gradient theme (unchanged colors) + text contrast kept white */
+body[data-theme="gradient"]{
+  --bg: linear-gradient(-45deg,#6a11cb,#2575fc,#6a11cb,#2575fc);
+  --panel-bg: rgba(10,12,20,0.72);
+  --accent:#7b61ff; --accent-2:#00bcd4; --text:#ffffff;
+  --card-border: rgba(255,255,255,0.06);
+  --shadow: rgba(8,8,20,0.45);
+  --input-text: #ffffff;
+  --text-contrast: #ffffff;
+  --item-text: #FFFFFF;
+}
+
+/* neon (unchanged) */
+body[data-theme="neon"]{
+  --bg: linear-gradient(180deg,#050405,#0b0710);
+  --panel-bg: rgba(5,5,5,0.85);
+  --accent:#00e5ff; --accent-2:#ff3dcb; --text:#e6f9fb;
+  --card-border: rgba(0,230,255,0.06);
+  --shadow: rgba(0,0,0,0.7);
+  --input-text: #e6f9fb;
+  --text-contrast: #e6f9fb;
+  --item-text: #FFFFFF;
+}
+
+/* bright (unchanged colors) BUT override inputs/text to dark for contrast */
+body[data-theme="bright"]{
+  --bg: linear-gradient(120deg,#f6d365,#fda085,#84fab0,#8fd3f4);
+  --panel-bg: #ffffff;
+  --accent:#0288d1; --accent-2:#039be5; --text:#222222;
+  --card-border: rgba(0,0,0,0.06);
+  --shadow: rgba(0,0,0,0.08);
+  /* ensure inputs and numbers readable on light panel */
+  --input-text: #222222;
+  --text-contrast: #222222;
+  --item-text: #222222;
+}
+
+/* Animated bg for gradient/bright */
+@keyframes bgMove {0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+body[data-theme="gradient"], body[data-theme="bright"]{background:var(--bg);background-size:400% 400%;animation:bgMove 12s ease infinite}
+body[data-theme="neon"]{background:var(--bg);background-size:cover}
+
+/* App layout */
+.app{max-width:980px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;position:sticky;top:0;z-index:60;background:transparent;backdrop-filter:blur(6px)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--text-contrast)}
+.brand .logo{font-size:22px}
+.theme-wrap{position:relative}
+
+/* theme button/menu */
+.theme-btn{padding:10px 14px;border-radius:999px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;font-weight:800;cursor:pointer}
+.theme-menu{position:absolute;right:0;top:58px;background:var(--panel-bg);border:1px solid var(--card-border);padding:8px;border-radius:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 30px var(--shadow);transform-origin:top right;opacity:0;visibility:hidden;transform:translateY(-6px) scale(.98);transition:all 160ms}
+.theme-menu.show{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
+.theme-item{padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:800;color:var(--text-contrast)}
+.theme-item:hover{background:var(--muted)}
+
+/* Views */
+.views{flex:1;display:flex;flex-direction:column;padding-bottom:72px}
+.panel{background:var(--panel-bg);margin:12px;border-radius:12px;padding:12px;border:1px solid var(--card-border);box-shadow:0 10px 30px var(--shadow)}
+
+/* Items grid: preserve order & layout EXACTLY but ensure visibility on mobile by allowing horizontal scroll inside panel */
+.items-area{overflow:auto;padding:8px}
+.items-grid{display:grid;grid-template-rows:repeat(15,minmax(58px,1fr));grid-auto-columns:minmax(260px,1fr);grid-auto-flow:column;gap:12px;padding:6px;width:max-content}
+.item-box{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:space-between;min-width:220px;border:1px solid var(--card-border)}
+.item-number{font-weight:900;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.02);font-weight:900;color:var(--accent)}
+/* تحسين وضوح نص الأصناف */
+.item-name{flex:1;margin-right:8px;font-weight:900;color:var(--item-text);text-shadow:0 1px 2px rgba(0,0,0,0.3)}
+
+/* quantity & inputs: use --input-text for color (ensures contrast) */
+.quantity-input{width:76px;padding:10px;border-radius:8px;border:2px solid var(--card-border);background:transparent;color:var(--input-text);font-weight:900;text-align:center;appearance:textfield}
+.quantity-input::placeholder{color:rgba(255,255,255,0.5)}
+.quantity-input:focus{outline:none;border-color:var(--accent);box-shadow:0 8px 18px rgba(0,0,0,0.14)}
+
+/* amount & summary */
+.control-flex{display:flex;gap:12px;align-items:flex-end}
+#totalAmount{width:100%;padding:12px;border-radius:10px;border:3px solid var(--card-border);background:transparent;color:var(--input-text);font-weight:900;text-align:center}
+
+/* bottom nav fixed */
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:10px;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.08));z-index:80}
+.nav-bar{max-width:980px;width:100%;display:flex;justify-content:space-around;gap:8px;padding:8px 12px;background:var(--panel-bg);border-radius:18px;margin:0 12px;border:1px solid var(--card-border);box-shadow:0 10px 30px var(--shadow)}
+.nav-btn{flex:1;padding:12px;border-radius:12px;background:transparent;border:none;color:var(--text-contrast);font-weight:800;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+.nav-btn.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 8px 22px rgba(0,0,0,0.2)}
+
+/* view switching animation */
+.view{display:none;opacity:0;transform:translateY(8px);transition:opacity 240ms,transform 240ms}
+.view.show{display:block;opacity:1;transform:translateY(0)}
+
+/* modal */
+.modal{position:fixed;left:0;right:0;top:0;bottom:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:100}
+.modal .modal-content{width:92%;max-width:420px;padding:18px;border-radius:12px;background:var(--panel-bg);border:1px solid var(--card-border)}
+
+/* splash */
+.splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:linear-gradient(180deg,#071018,#071218);z-index:200}
+.splash .logo{width:92px;height:92px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:44px;background:linear-gradient(90deg,var(--accent),var(--accent-2));box-shadow:0 12px 40px rgba(0,0,0,0.35)}
+.loader{width:46px;height:46px;border-radius:50%;position:relative}
+.loader:after{content:"";position:absolute;left:0;top:0;width:100%;height:100%;border-radius:50%;border:4px solid rgba(255,255,255,0.12);border-top-color:#fff;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* small screens */
+@media (max-width:720px){
+  .items-grid{grid-auto-columns:minmax(240px,1fr)}
+  .quantity-input{width:64px}
+  #totalAmount{font-size:16px}
+}
+
+/* Ensure no horizontal overflow globally */
+html,body{overflow-x:hidden}
+
+/* ================== تحسين وضوح نص السجل فقط ================== */
+#view-records { color: #eaf9ff !important; }
+#view-records .panel { background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent); }
+#view-records h2, #view-records strong, #view-records small, #view-records button, #view-records p, #view-records li { color: #ffffff !important; }
+#view-records li span { color: #4fc3f7 !important; font-weight:800; }
+#view-records .period-log { padding:10px; border-radius:10px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.02); }
+</style>
+</head>
+<body data-theme="gradient">
+
+<div class="app" id="appRoot">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="brand"><span class="logo">🍔</span><span>AppCashier</span></div>
+    <div class="theme-wrap">
+      <button class="theme-btn" id="themeToggleBtn" aria-expanded="false">🎨 تغيير الثيم</button>
+      <div class="theme-menu" id="themeMenu" role="menu" aria-hidden="true">
+        <div class="theme-item" data-theme-choice="gradient">🌈 المتدرج المتحرك</div>
+        <div class="theme-item" data-theme-choice="neon">💡 النيون المتوهج</div>
+        <div class="theme-item" data-theme-choice="bright">☀️ الفاتح النابض</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Splash -->
+  <div class="splash" id="splash">
+    <div class="logo" aria-hidden="true">🍔</div>
+    <h1 style="margin:0;color:var(--text-contrast)">AppCashier</h1>
+    <p style="margin:0;color:var(--text-contrast)">تحميل التطبيق...</p>
+    <div class="loader" aria-hidden="true"></div>
+  </div>
+
+  <!-- Main views -->
+  <main class="views" id="views">
+
+    <!-- Login view (initial) -->
+    <section id="view-login" class="view show" aria-live="polite">
+      <div class="panel" style="max-width:520px;margin:14px auto;">
+        <h2 style="margin:0 0 8px 0;color:var(--accent)">تسجيل الدخول</h2>
+        <input id="loginUser" type="text" placeholder="اسم المستخدم (admin)" value="admin" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--card-border);margin-bottom:8px;background:transparent;color:var(--text-contrast);font-weight:700">
+        <input id="loginPass" type="password" placeholder="كلمة المرور" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--card-border);margin-bottom:12px;background:transparent;color:var(--text-contrast);font-weight:700">
+        <div style="display:flex;gap:10px">
+          <button id="loginBtn" class="theme-btn" style="flex:1">دخول</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Home: Items + Amount -->
+    <section id="view-home" class="view" aria-hidden="true">
+      <div class="panel">
+        <h2 style="margin:0 0 8px 0;color:var(--accent)">الأصناف</h2>
+        <div class="items-area">
+          <!-- Items grid keeps original columns/order; horizontal scroll allowed inside panel -->
+          <div class="items-grid" id="itemsGrid"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:8px">
+        <h3 style="margin:0 0 8px 0;color:var(--accent)">تسجيل إجمالي الفترة الحالية</h3>
+        <div class="control-flex">
+          <div>
+            <input id="totalAmount" type="number" placeholder="أدخل المبلغ الإجمالي هنا" min="0" style="width:100%" />
+          </div>
+          <div style="min-width:150px">
+            <div style="background:linear-gradient(90deg,var(--accent),var(--accent-2));padding:10px;border-radius:10px;color:white;font-weight:900;text-align:center">
+              إجمالي عدد الوحدات
+              <div id="totalOrders" style="font-size:20px">0</div>
+            </div>
+          </div>
+          <div style="min-width:150px">
+            <button id="endPeriodBtn" class="theme-btn" style="width:100%">إنهاء الفترة</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Records (past periods) -->
+    <section id="view-records" class="view" aria-hidden="true">
+      <div class="panel">
+        <h2 style="color:var(--accent);margin:0 0 8px 0">سجل الفترات السابقة</h2>
+        <div id="pastContainer"></div>
+        <div style="margin-top:8px">
+          <button id="deleteAllBtn" style="width:100%;padding:12px;border-radius:10px;background:var(--danger);color:#fff;border:none;font-weight:800">حذف السجل بالكامل</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Report -->
+    <section id="view-report" class="view" aria-hidden="true">
+      <div class="panel">
+        <h2 style="color:var(--accent);margin:0 0 8px 0">تقرير المبيعات</h2>
+        <div id="reportDate" style="font-weight:800;margin-bottom:8px"></div>
+        <div id="reportBox"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom navigation (fixed) -->
+  <nav class="bottom-nav" aria-label="تنقّل">
+    <div class="nav-bar" role="tablist">
+      <button class="nav-btn active" id="nav-home" data-target="view-home" aria-selected="true">
+        <div style="font-size:18px">🧾</div>
+        <div>الأصناف</div>
+      </button>
+      <button class="nav-btn" id="nav-records" data-target="view-records" aria-selected="false">
+        <div style="font-size:18px">📒</div>
+        <div>السجل</div>
+      </button>
+      <button class="nav-btn" id="nav-report" data-target="view-report" aria-selected="false">
+        <div style="font-size:18px">📊</div>
+        <div>التقرير</div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Modal for admin confirmation -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-content">
+      <h3 id="modalTitle">تأكيد العملية</h3>
+      <p id="modalMsg">الرجاء إدخال كلمة سر المدير</p>
+      <input id="modalPass" type="password" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--card-border);margin-top:8px;background:transparent;color:var(--text-contrast)">
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="modalConfirm" class="theme-btn" style="flex:1">تأكيد</button>
+        <button id="modalCancel" class="theme-btn" style="flex:1;background:transparent;border:1px solid var(--card-border)">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ========================= AppCashier JS ========================= */
+/* Config & data */
+const LOGIN_PW = '1010';
+const ADMIN_PW = '111975';
+const THEME_KEY = 'appcashier_theme_v1';
+const PERIODS_KEY = 'appcashier_periods_v1';
+
+const ALL_ITEMS = [
+"شاورمه كيذر","شاورمه شامي","شاورمه فينا","شاورمه طبق",
+"مكرونه","كبيبه","ورق عنب","سلطه خضراء","طماطم مخلل","باذنجان مخلل","شيبسي","بابا غنوج","طرشي",
+"كفته ص","سجق ص","كبده ص","مخ ص","روزبيف ص","جبنه رومي","فراخ بانيه ص","بيف برجر","سوسيس ",
+"كفته شامي","سجق شامي","كبده شامي","مخ شامي","روزبيف شامي","سوسيس شامي","فراخ شامي",
+"كفته فينا","سجق فينا","كبده فينا","مخ فينا","روزبيف فينا","سوسيس فينا","فراخ فينا",
+"جبنه رومي فينا",
+" مانجو"," فراوله"," رمان"," برتقال","عنب"," جوافه"," موز"," كانتالوب","كوكتيل ",
+"كولا","سبرايت","فانتا","دايت ","مياه معدنيه",
+"ليمون","بطيخ","كانز ص","كانز ك"
+];
+
+let pastPeriods = [];
+let audioContext = null;
+
+/* Helpers */
+const $ = id=>document.getElementById(id);
+
+/* -- Theme handling -- */
+function applyTheme(theme){
+  document.body.setAttribute('data-theme', theme);
+  try{ localStorage.setItem(THEME_KEY, theme); }catch(e){}
+  document.querySelectorAll('.theme-item').forEach(it=> it.style.background = (it.dataset.themeChoice === theme) ? 'rgba(255,255,255,0.03)' : 'transparent');
+}
+(function initTheme(){
+  let saved = null;
+  try{ saved = localStorage.getItem(THEME_KEY); }catch(e){}
+  if(!saved) saved = 'gradient';
+  applyTheme(saved);
+})();
+
+$('themeToggleBtn').addEventListener('click', ()=>{ const m = $('themeMenu'); m.classList.toggle('show'); m.setAttribute('aria-hidden', m.classList.contains('show') ? 'false':'true'); });
+document.addEventListener('click', e=>{ if(!e.target.closest('.theme-wrap')){ $('themeMenu').classList.remove('show'); $('themeMenu').setAttribute('aria-hidden','true'); }});
+document.querySelectorAll('.theme-item').forEach(it=> it.addEventListener('click', ()=>{ applyTheme(it.dataset.themeChoice); $('themeMenu').classList.remove('show'); }));
+
+/* -- Soft click audio (أكثر هدوءًا وبساطة) -- */
+function initAudio(){ try{ audioContext = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ audioContext = null; } }
+function playSoftClick(){
+  if(!audioContext) initAudio();
+  if(!audioContext) return;
+  const ctx = audioContext;
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = 'sine';
+  // تردد أقل وأكثر هدوءًا
+  o.frequency.value = 800;
+  g.gain.value = 0.0001;
+  o.connect(g); g.connect(ctx.destination);
+  o.start();
+  // مدة أقصر وشدة أقل
+  g.gain.setTargetAtTime(0.02, ctx.currentTime, 0.002);
+  o.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.03);
+  setTimeout(()=>{ 
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.02); 
+    o.stop(ctx.currentTime + 0.03); 
+  }, 30);
+}
+
+/* splash: play soft click once (or on first interaction if blocked) */
+const splash = $('splash');
+let splashPlayed = false;
+function showSplashThenHide(){
+  try{ playSoftClick(); splashPlayed = true; }catch(e){ splashPlayed = false; }
+  if(!splashPlayed){
+    const once = ()=>{ try{ playSoftClick(); }catch(e){}; window.removeEventListener('touchstart', once); window.removeEventListener('click', once); };
+    window.addEventListener('touchstart', once, {passive:true}); window.addEventListener('click', once, {passive:true});
+  }
+  setTimeout(()=>{ splash.style.transition='opacity 300ms'; splash.style.opacity='0'; setTimeout(()=>{ splash.style.display='none'; }, 340); }, 1100);
+}
+
+/* -- PWA manifest creation (dynamic) -- */
+(function createManifest(){
+  const manifest = {
+    "name":"AppCashier",
+    "short_name":"AppCashier",
+    "description":"نظام الكاشير - AppCashier",
+    "start_url":".",
+    "display":"standalone",
+    "background_color":"#071018",
+    "theme_color":"#2575fc",
+    "icons":[
+      {"src":"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%23FFB74D'/%3E%3Ctext x='256' y='310' font-size='220' text-anchor='middle' font-family='sans-serif'%3E%F0%9F%8D%94%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = url;
+  document.head.appendChild(link);
+})();
+
+/* -- Views & navigation (3 views + login) -- */
+const views = ['view-login','view-home','view-records','view-report'];
+function showView(id){
+  views.forEach(v=>{
+    const el = $(v);
+    if(!el) return;
+    if(v===id){ el.classList.add('show'); el.removeAttribute('aria-hidden'); }
+    else{ el.classList.remove('show'); el.setAttribute('aria-hidden','true'); }
+  });
+  // bottom nav highlight
+  document.querySelectorAll('.nav-btn').forEach(btn=>{ btn.classList.toggle('active', btn.dataset.target === id); btn.setAttribute('aria-selected', btn.dataset.target === id ? 'true':'false'); });
+  // play click on navigation (except login initial)
+  if(id !== 'view-login') try{ playSoftClick(); }catch(e){}
+}
+
+/* attach bottom nav */
+document.querySelectorAll('.nav-btn').forEach(btn=> btn.addEventListener('click', ()=> showView(btn.dataset.target), {passive:true}));
+
+/* -- Build items grid (KEEP ORDER EXACTLY) -- */
+function buildItemsGrid(){
+  const grid = $('itemsGrid'); grid.innerHTML = '';
+  ALL_ITEMS.forEach((name, idx)=>{
+    const safe = `input_${idx}`;
+    const box = document.createElement('div'); box.className='item-box';
+    box.innerHTML = `<div style="display:flex;align-items:center;gap:12px;"><div class="item-number">${idx+1}</div><div class="item-name">${name}</div></div><input id="${safe}" class="quantity-input" type="number" value="0" min="0" inputmode="numeric" aria-label="${name} كمية">`;
+    grid.appendChild(box);
+  });
+  document.querySelectorAll('.quantity-input').forEach(inp=>{
+    inp.addEventListener('input', throttle(updateTotal,120), {passive:true});
+    inp.addEventListener('click', ()=> inp.select());
+    inp.addEventListener('touchstart', ()=> inp.select(), {passive:true});
+  });
+}
+
+/* throttle */
+function throttle(fn, wait){
+  let last=0, timeout=null;
+  return function(...args){
+    const now = Date.now(); const remaining = wait - (now - last);
+    if(remaining <= 0){ if(timeout){ clearTimeout(timeout); timeout = null;} last = now; fn.apply(this,args); }
+    else if(!timeout){ timeout = setTimeout(()=>{ last = Date.now(); timeout = null; fn.apply(this,args); }, remaining); }
+  }
+}
+
+/* update total */
+function updateTotal(){
+  let total=0;
+  ALL_ITEMS.forEach((_,i)=> { const v = parseInt($(`input_${i}`).value) || 0; if(v>0) total += v; });
+  $('totalOrders').textContent = total;
+}
+
+/* -- Period logic -- */
+function savePeriods(){ try{ localStorage.setItem(PERIODS_KEY, JSON.stringify(pastPeriods)); }catch(e){} }
+function loadPeriods(){ try{ const s = localStorage.getItem(PERIODS_KEY); if(s) pastPeriods = JSON.parse(s); }catch(e){ pastPeriods = [];} renderPeriods(); }
+
+function endPeriod(){
+  const amount = parseFloat($('totalAmount').value);
+  if(isNaN(amount) || amount <= 0){ alert('الرجاء إدخال المبلغ الإجمالي'); $('totalAmount').focus(); return; }
+  const totalCnt = parseInt($('totalOrders').textContent) || 0;
+  if(totalCnt === 0){ alert('لا يوجد أصناف مسجلة'); return; }
+  const itemsLog = {};
+  ALL_ITEMS.forEach((name,i)=>{ const v = parseInt($(`input_${i}`).value) || 0; if(v>0) itemsLog[name] = v; });
+  const now = new Date();
+  const period = { id: pastPeriods.length + 1, time: now.toLocaleTimeString('ar-EG'), date: now.toLocaleDateString('ar-EG'), totalAmount: amount, totalOrders: totalCnt, itemsLog };
+  pastPeriods.push(period); savePeriods(); renderPeriods();
+  // reset inputs
+  $('totalAmount').value = ''; ALL_ITEMS.forEach((_,i)=> $(`input_${i}`).value = 0 );
+  updateTotal();
+  alert(`تم تسجيل الفترة بنجاح. المبلغ: ${amount}`);
+}
+
+/* render periods */
+function renderPeriods(){
+  const container = $('pastContainer'); container.innerHTML = '';
+  if(pastPeriods.length === 0){ container.innerHTML = '<div style="padding:12px;color:var(--muted)">لا توجد فترات سابقة.</div>'; return; }
+  pastPeriods.slice().reverse().forEach(p=>{
+    const div = document.createElement('div'); div.className='period-log';
+    let itemsHtml = '<ul style="padding-right:12px;margin:8px 0">';
+    for(const key in p.itemsLog){ itemsHtml += `<li style="margin-bottom:6px"><strong>${key}:</strong> <span style="color:var(--accent);font-weight:800">${p.itemsLog[key]}</span></li>`; }
+    itemsHtml += '</ul>';
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>فترة ${p.id}</strong><small>${p.time} — ${p.date}</small></div>
+      <p style="margin:6px 0;font-weight:800">المبلغ: <span style="color:var(--danger);font-weight:900">${p.totalAmount}</span> — القطع: ${p.totalOrders}</p>
+      ${itemsHtml}
+      <div style="display:flex;gap:8px"><button style="flex:1;padding:8px;border-radius:8px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;font-weight:800" onclick="promptEdit(${p.id})">تعديل</button></div>`;
+    container.appendChild(div);
+  });
+}
+
+/* prompt edit */
+function promptEdit(id){
+  $('modalTitle').textContent = 'تأكيد التعديل';
+  $('modalMsg').innerHTML = `الرجاء إدخال كلمة سر المدير لتعديل الفترة ${id}`;
+  $('modalPass').value = ''; $('modal').style.display='flex'; $('modal').setAttribute('aria-hidden','false');
+  $('modalConfirm').onclick = ()=> { handleModal('edit', id); };
+  $('modalCancel').onclick = closeModal;
+}
+function handleModal(action, id){
+  const val = $('modalPass').value;
+  closeModal();
+  if(val !== ADMIN_PW){ alert('كلمة سر خاطئة'); return; }
+  if(action === 'edit') editPeriod(id);
+  else if(action === 'delete') executeDeleteAll();
+}
+function closeModal(){ $('modal').style.display='none'; $('modal').setAttribute('aria-hidden','true'); }
+
+/* edit period: load data to inputs & remove old */
+function editPeriod(id){
+  const idx = pastPeriods.findIndex(p=>p.id === id);
+  if(idx === -1) return alert('لم يتم العثور على الفترة');
+  const period = pastPeriods[idx];
+  ALL_ITEMS.forEach((name,i)=> $(`input_${i}`).value = period.itemsLog[name] || 0 );
+  $('totalAmount').value = period.totalAmount;
+  pastPeriods.splice(idx,1); savePeriods(); renderPeriods();
+  showView('view-home');
+  alert('تم تحميل بيانات الفترة للتعديل. عدّل ثم اضغط "إنهاء الفترة" للحفظ.');
+}
+
+/* delete all - show modal for admin password (no extra confirm) */
+$('deleteAllBtn').addEventListener('click', ()=> {
+  $('modalTitle').textContent = 'تأكيد الحذف';
+  $('modalMsg').textContent = 'الرجاء إدخال كلمة سر المدير لحذف السجل بالكامل';
+  $('modalPass').value=''; $('modal').style.display='flex'; $('modal').setAttribute('aria-hidden','false');
+  $('modalConfirm').onclick = ()=> { handleModal('delete'); };
+  $('modalCancel').onclick = closeModal;
+});
+function executeDeleteAll(){ pastPeriods = []; savePeriods(); renderPeriods(); alert('تم حذف السجل.'); }
+
+/* generate report */
+function generateReport(){
+  if(pastPeriods.length === 0){ alert('لا توجد بيانات للتقرير'); return; }
+  const combined = {}; let totalMoney=0, totalUnits=0;
+  pastPeriods.forEach(p=>{ totalMoney += Number(p.totalAmount); totalUnits += Number(p.totalOrders); for(const it in p.itemsLog) combined[it] = (combined[it]||0) + p.itemsLog[it]; });
+  let rows=''; Object.keys(combined).forEach(k=> rows += `<tr><td>${k}</td><td>${combined[k]} قطعة</td></tr>`);
+  const html = `<table class="report-table"><thead><tr><th>الصنف</th><th>الكمية</th></tr></thead><tbody>${rows}<tr class="report-total-row"><td>إجمالي القطع</td><td>${totalUnits} قطعة</td></tr><tr class="report-total-row"><td>الإجمالي المالي</td><td>${totalMoney.toFixed(2)}</td></tr></tbody></table>`;
+  $('reportDate').textContent = new Date().toLocaleDateString('ar-EG');
+  $('reportBox').innerHTML = html;
+  showView('view-report');
+}
+
+/* Login flow */
+$('loginBtn').addEventListener('click', ()=> {
+  const u = $('loginUser').value.trim(), p = $('loginPass').value.trim();
+  if(u === 'admin' && p === LOGIN_PW){
+    buildItemsGrid(); loadPeriods(); showView('view-home');
+    // hide splash if still visible
+    if(splash && splash.style.display !== 'none') showSplashThenHide();
+    // show bottom nav
+    document.querySelector('.bottom-nav').style.display = 'block';
+  } else alert('بيانات الدخول خاطئة');
+});
+
+/* end period */
+$('endPeriodBtn').addEventListener('click', endPeriod);
+
+/* nav short-cuts */
+$('nav-home').addEventListener('click', ()=> showView('view-home'));
+$('nav-records').addEventListener('click', ()=> { renderPeriods(); showView('view-records'); });
+$('nav-report').addEventListener('click', ()=> generateReport());
+
+/* initialization */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // hide bottom nav until login
+  document.querySelector('.bottom-nav').style.display = 'none';
+  // show splash then hide
+  showSplashThenHide();
+  // preload stored periods
+  try{ const s = localStorage.getItem(PERIODS_KEY); if(s) pastPeriods = JSON.parse(s); }catch(e){ pastPeriods = []; }
+  // pre-init audio on first gesture (for autoplay restrictions)
+  const initOnFirst = ()=>{ try{ initAudio(); }catch(e){}; window.removeEventListener('touchstart', initOnFirst); window.removeEventListener('click', initOnFirst); };
+  window.addEventListener('touchstart', initOnFirst, {passive:true}); window.addEventListener('click', initOnFirst, {passive:true});
+});
+
+/* keep updating total for responsiveness */
+function updateLoop(){ updateTotal(); requestAnimationFrame(updateLoop); }
+requestAnimationFrame(updateLoop);
+
+/* expose promptEdit for inline onclicks */
+window.promptEdit = promptEdit;
+
+/* attempt to lock orientation (best-effort) */
+(function tryLock(){ if(screen.orientation && screen.orientation.lock) screen.orientation.lock('portrait').catch(()=>{}); })();
+
 </script>
 </body>
 </html>
